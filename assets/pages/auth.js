@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TextInput, Text, setState, Pressable, ScrollView, View } from 'react-native';
 
-const styles = require('../style');
+const { styles } = require('../style');
 
 class SignUpScreen extends React.Component {
 

@@ -12,6 +12,7 @@ const ProfileScreen = require('./assets/pages/profile');
 
 const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
+const accentColor = "purple";
 
 const App = () => {
   let user = true;
@@ -23,7 +24,7 @@ const App = () => {
         shifting={false}
         activeColor="white"
         inactiveColor="#cf9af5"
-        barStyle={{ backgroundColor: 'purple' }}
+        barStyle={{ backgroundColor: accentColor }}
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, _ }) => {
             let iconName;
@@ -39,8 +40,6 @@ const App = () => {
             } else if (route.name === 'Profile') {
               iconName = focused ? 'ios-person' : 'ios-person-outline';
             }
-
-            // You can return any component that you like here!
             return <Ionicons name={iconName} size={18} color={color} />;
           },
         })}
