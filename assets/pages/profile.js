@@ -1,10 +1,15 @@
 import * as React from 'react';
-import { TouchableOpacity, Text, Image, ScrollView, View } from 'react-native';
+import { TouchableOpacity, Text, Image, ScrollView, View, DevSettings } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { styles, profileStyles } = require('../style');
 
 class ProfileScreen extends React.Component {
+    logout = async () => {
+        await AsyncStorage.clear();
+        DevSettings.reload();
+    }
     render() {
         return (
             <ScrollView>
@@ -37,7 +42,7 @@ class ProfileScreen extends React.Component {
                             </TouchableOpacity>
                         </View>
                         <View style={{ borderTopWidth: 1, borderTopColor: '#bbb' }}>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={this.logout}>
                                 <Text style={[profileStyles.option, styles.bigText, { color: "#ff3d74" }]}>
                                     <Ionicons name={"ios-log-out-outline"} size={18} color={"#ff3d74"} />  Logout
                                 </Text>

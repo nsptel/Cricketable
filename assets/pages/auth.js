@@ -1,42 +1,72 @@
 import * as React from 'react';
-import { TextInput, Text, setState, Pressable, ScrollView, View } from 'react-native';
+import { TextInput, Text, Pressable, ScrollView, View, DevSettings } from 'react-native';
+import firebase from 'firebase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { styles } = require('../style');
+const db= require('../../db_conn');
 
 class SignUpScreen extends React.Component {
 
     state = {
-        email: '', username: '', password: '', confirmPassword: '', city: ''
+        email: 'nsp4898@gmail.com', first_name: 'Neel', last_name: 'Patel', password: 'Neel@4898', confirmPassword: 'Neel@4898', city: 'Thunder Bay', disabled: false
     }
+
     onChangeText = (key, val) => {
         this.setState({ [key]: val })
     }
-    signUp = async () => {
-        const { email, username, password, confirmPassword, city } = this.state
-        try {
-            console.log('user successfully signed up!: ', success)
-        } catch (err) {
-            console.log('error signing up: ', err)
-        }
+
+    signUp = () => {
+
+        this.setState({ disabled: true });
+
+        db.collection('user')
+        .add({
+            first_name: this.state.first_name,
+            last_name: this.state.last_name,
+            email: this.state.email,
+            password: this.state.password,
+            city: this.state.city,
+            profile_pic: '/profile_pics/sample.png',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        })
+        .then(async (doc) => {
+            try {
+                await AsyncStorage.setItem('userId', doc.id);
+            } catch (err) {
+                console.log(err);
+            }
+            this.props.navigation.navigate('Login');
+        });
     }
 
     render() {
         return (
-            <ScrollView>
+            <ScrollView keyboardShouldPersistTaps='handled'>
                 <View style={styles.container}>
                     <TextInput
                         style={styles.input}
                         placeholder='Email'
                         autoCapitalize="none"
                         placeholderTextColor='#aaa'
+                        defaultValue={this.state.email}
                         onChangeText={val => this.onChangeText('email', val)}
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder='Name'
+                        placeholder='First Name'
                         autoCapitalize="none"
                         placeholderTextColor='#aaa'
-                        onChangeText={val => this.onChangeText('name', val)}
+                        defaultValue={this.state.first_name}
+                        onChangeText={val => this.onChangeText('first_name', val)}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder='Last Name'
+                        autoCapitalize="none"
+                        placeholderTextColor='#aaa'
+                        defaultValue={this.state.last_name}
+                        onChangeText={val => this.onChangeText('last_name', val)}
                     />
                     <TextInput
                         style={styles.input}
@@ -44,6 +74,7 @@ class SignUpScreen extends React.Component {
                         secureTextEntry={true}
                         autoCapitalize="none"
                         placeholderTextColor='#aaa'
+                        defaultValue={this.state.password}
                         onChangeText={val => this.onChangeText('password', val)}
                     />
                     <TextInput
@@ -52,6 +83,7 @@ class SignUpScreen extends React.Component {
                         secureTextEntry={true}
                         autoCapitalize="none"
                         placeholderTextColor='#aaa'
+                        defaultValue={this.state.confirmPassword}
                         onChangeText={val => this.onChangeText('confirmPassword', val)}
                     />
                     <TextInput
@@ -59,10 +91,12 @@ class SignUpScreen extends React.Component {
                         placeholder='City'
                         autoCapitalize="none"
                         placeholderTextColor='#aaa'
+                        defaultValue={this.state.city}
                         onChangeText={val => this.onChangeText('city', val)}
                     />
                     <Pressable
                         onPress={this.signUp}
+                        disabled={this.state.disabled}
                         style={styles.button}>
                         <Text style={[styles.invertText, styles.text]}>Sign Up</Text>
                     </Pressable>
@@ -81,30 +115,35 @@ class SignUpScreen extends React.Component {
 
 class LoginScreen extends React.Component {
     state = {
-        email: '', password: ''
+        email: 'nsp4898@gmail.com', password: 'Neel_4898'
     }
     onChangeText = (key, val) => {
-        this.setState({ [key]: val })
+        this.setState({ [key]: val });
     }
     login = async () => {
-        const { email, password } = this.state
-        try {
-            // here place your signup logic
-            console.log('user successfully logged in!: ', success)
-        } catch (err) {
-            console.log('error logging in: ', err)
+        const { email, password } = this.state;
+        const user = await db.collection('user')
+        .where('email', '==', email)
+        .where('password', '==', password)
+        .get();
+        if (user.docs.length > 0) {
+            await AsyncStorage.setItem('user', user.docs[0].id);
+            DevSettings.reload();
+        } else {
+            console.log('Incorrect Credentials');
         }
     }
 
     render() {
         return (
-            <ScrollView>
+            <ScrollView keyboardShouldPersistTaps='handled'>
                 <View style={styles.container}>
                     <TextInput
                         style={styles.input}
                         placeholder='Email'
                         autoCapitalize="none"
                         placeholderTextColor='#aaa'
+                        defaultValue={this.state.email}
                         onChangeText={val => this.onChangeText('email', val)}
                     />
                     <TextInput
@@ -113,6 +152,7 @@ class LoginScreen extends React.Component {
                         secureTextEntry={true}
                         autoCapitalize="none"
                         placeholderTextColor='#aaa'
+                        defaultValue={this.state.password}
                         onChangeText={val => this.onChangeText('password', val)}
                     />
                     <Pressable
