@@ -4,13 +4,21 @@ import firebase from 'firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../context';
 
+
 const { styles } = require('../style');
 const db = require('../../db_conn');
 
 class SignUpScreen extends React.Component {
 
     state = {
-        email: 'nsp4898@gmail.com', first_name: 'Neel', last_name: 'Patel', password: 'Neel@4898', confirmPassword: 'Neel@4898', city: 'Thunder Bay', disabled: false
+        email: 'nsp4898@gmail.com', 
+        first_name: 'Neel', 
+        last_name: 'Patel', 
+        password: 'Neel@4898', 
+        confirmPassword: 'Neel@4898', 
+        city: 'Thunder Bay', 
+        disabled: false,
+        errors: '',
     }
 
     onChangeText = (key, val) => {
@@ -19,8 +27,17 @@ class SignUpScreen extends React.Component {
 
     signUp = () => {
 
-        this.setState({ disabled: true });
+        // this.setState({ disabled: true });
 
+        this.state.errors = '';
+        this.onChangeText('errors', this.state.errors);
+
+        var emailValidated = this.emailValidate();
+        var passwordValidation = this.passwordValidation();
+        var nullValidation = this.nullValidation();
+
+
+        if(emailValidated && passwordValidation && nullValidation){
         db.collection('user')
             .add({
                 first_name: this.state.first_name,
@@ -40,11 +57,50 @@ class SignUpScreen extends React.Component {
                 this.props.navigation.navigate('Login');
             });
     }
+}
+
+emailValidate = () => {
+    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+           if (reg.test(this.state.email) === true){
+               return true;
+           }else {
+               this.state.errors += '\nemail is not valid';
+               this.onChangeText('errors', this.state.errors);
+           }
+          
+}
+
+passwordValidation = () => {
+    if(this.state.password == this.state.confirmPassword){
+        return true;
+    } else {
+        this.state.errors += '\npassword and confirm password is different'; 
+        this.onChangeText('errors', this.state.errors); 
+    }
+}
+
+nullValidation = () => {
+
+   
+    if(this.state.email.length > 0 && this.state.password.length > 0
+        && this.state.first_name.length > 0 && this.state.last_name.length > 0
+        && this.state.city.length > 0){
+            return true;
+        }
+        else{
+            this.state.errors += '\none or more fields are empty';
+            this.onChangeText('errors', this.state.errors);
+            
+        }
+}
+
+
 
     render() {
         return (
             <ScrollView keyboardShouldPersistTaps='handled'>
                 <View style={styles.container}>
+                    <Text>{this.state.errors}</Text>
                     <TextInput
                         style={styles.input}
                         placeholder='Email'
@@ -52,6 +108,7 @@ class SignUpScreen extends React.Component {
                         placeholderTextColor='#aaa'
                         defaultValue={this.state.email}
                         onChangeText={val => this.onChangeText('email', val)}
+                
                     />
                     <TextInput
                         style={styles.input}
