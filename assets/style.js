@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
-import { max } from 'react-native-reanimated';
 
 const accentColor = "purple";
 
@@ -22,7 +21,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: Constants.statusBarHeight
+        marginTop: Constants.statusBarHeight,
     },
     button: {
         paddingVertical: 16,
@@ -36,6 +35,22 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         letterSpacing: 0.25,
+    },
+    headerTab: {
+        width: '100%',
+        backgroundColor: 'white',
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderBottomColor: '#bbb',
+        borderBottomWidth: 0.5,
+        marginBottom: 12,
+    },
+    headerTitle: {
+        textAlign: 'left',
+        color: accentColor,
+        fontSize: 22,
+        fontWeight: 'bold',
+        fontFamily: 'serif',
     },
     invertText: {
         color: 'white'
@@ -51,6 +66,19 @@ const styles = StyleSheet.create({
     },
     bigText: {
         fontSize: 18,
+    },
+    error: {
+        color: 'red',
+        padding: 10,
+        textAlign: 'left',
+    },
+    errorBlock: {
+        borderWidth: 1,
+        borderRadius: 3,
+        borderColor: 'red',
+        backgroundColor: '#fccaca',
+        width: '90%',
+        marginVertical: 10,
     }
 });
 

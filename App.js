@@ -4,11 +4,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import AuthStack from './assets/stacks/AuthStack';
 import MainStack from './assets/stacks/MainStack';
+import SplashScreen from './assets/pages/loading';
 import { authReducer } from './reducer';
 import AuthContext from './context';
 
 const App = () => {
-  const [state, dispatch] = React.useReducer(authReducer, { userToken: null });
+  const [state, dispatch] = React.useReducer(
+    authReducer,
+    { userToken: null, isLoading: true }
+  );
 
   const providerState = {
     state,
@@ -19,9 +23,7 @@ const App = () => {
     const getTokenAsync = async () => {
       try {
         let userToken = await AsyncStorage.getItem('user');
-        if (userToken) {
-          dispatch({ type: 'RESTORE_TOKEN', token: userToken });
-        }
+        dispatch({ type: 'RESTORE_TOKEN', token: userToken });
       } catch (err) {
         console.log(err);
       }
@@ -32,7 +34,13 @@ const App = () => {
   return (
     <AuthContext.Provider value={providerState}>
       <NavigationContainer>
-        {state.userToken ? <MainStack /> : <AuthStack />}
+        {state.isLoading ? (
+          <SplashScreen />
+          ) : state.userToken ? (
+            <MainStack />
+          ) : (
+            <AuthStack />
+          )}
       </NavigationContainer>
     </AuthContext.Provider>
   );

@@ -4,6 +4,7 @@ export const authReducer = (prevState, action) => {
             return {
                 ...prevState,
                 userToken: action.token,
+                isLoading: false,
             };
         case 'SIGN_IN':
             return {
