@@ -9,6 +9,7 @@ import HeaderComponent from './header';
 
 const { styles } = require('../style');
 const db = require('../../db_conn');
+let userData;
 
 const SignUpScreen = () => {
     const [email, setEmail] = React.useState('');
@@ -25,7 +26,7 @@ const SignUpScreen = () => {
         let result = true;
         let err = [];
         const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        if (!reg.test(email)) {
+        if (!reg.test(email) && email.trim().length > 0) {
             err.push('Email is not valid.');
             result = false;
         }
@@ -149,13 +150,13 @@ const LoginScreen = () => {
         let result = true;
         let err = [];
         const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        if (!reg.test(email)) {
+        if (!reg.test(email) && email.trim().length > 0) {
             err.push('Email is not valid.');
             result = false;
         }
 
-        if (password.trim().length == 0) {
-            err.push('Password field should not be empty.');
+        if (password.trim().length == 0 || email.trim().length == 0) {
+            err.push('One or more fields are empty.');
             result = false;
         }
 
@@ -173,12 +174,14 @@ const LoginScreen = () => {
             if (user.docs.length > 0) {
                 await AsyncStorage.setItem('user', user.docs[0].id);
                 // DevSettings.reload();
-                dispatch({ type: 'SIGN_IN', token: user.docs[0].id });
+                userData = user.docs[0].data();
+                dispatch({ type: 'SIGN_IN', userToken: user.docs[0].id, userData: user.docs[0].data() });
             } else {
                 setErrors(['Incorrect Credentials. Please try again.']);
             }
         }
     }
+
 
     return (
         <ScrollView keyboardShouldPersistTaps='handled'>
@@ -222,4 +225,5 @@ const LoginScreen = () => {
 module.exports = {
     'SignUpScreen': SignUpScreen,
     'LoginScreen': LoginScreen,
+    'userData': userData,
 }

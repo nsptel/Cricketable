@@ -12,6 +12,7 @@ const ProfileScreen = () => {
         await AsyncStorage.clear();
         dispatch({ type: 'SIGN_OUT' });
     }
+
     return (
         <ScrollView>
             <View style={styles.container}>
@@ -19,12 +20,12 @@ const ProfileScreen = () => {
                     <View style={profileStyles.headerContent}>
                         <Image style={profileStyles.avatar}
                             source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar1.png' }} />
-                        <Text style={[profileStyles.name, styles.bigText]}>John Doe</Text>
+                        <Text style={[profileStyles.name, styles.bigText]}>{ state.userData.first_name + ' ' + state.userData.last_name }</Text>
                         <Text style={profileStyles.name}>
-                            <Ionicons name={"ios-mail-open-outline"} size={16} color={"white"} /> john@doe.com
+                            <Ionicons name={"ios-mail-open-outline"} size={16} color={"white"} /> {state.userData.email}
                         </Text>
                         <Text style={profileStyles.name}>
-                            <Ionicons name={"ios-location-outline"} size={16} color={"white"} /> Thunder Bay, ON
+                            <Ionicons name={"ios-location-outline"} size={16} color={"white"} /> {state.userData.city}
                         </Text>
                     </View>
                 </View>

@@ -3,18 +3,21 @@ export const authReducer = (prevState, action) => {
         case 'RESTORE_TOKEN':
             return {
                 ...prevState,
-                userToken: action.token,
+                userToken: action.userToken,
+                userData: action.userData,
                 isLoading: false,
             };
         case 'SIGN_IN':
             return {
                 ...prevState,
-                userToken: action.token,
+                userToken: action.userToken,
+                userData: action.userData
             };
         case 'SIGN_OUT':
             return {
                 ...prevState,
                 userToken: null,
+                userData: null
             };
     }
 };
