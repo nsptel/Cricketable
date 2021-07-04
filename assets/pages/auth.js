@@ -27,7 +27,7 @@ const SignUpScreen = () => {
         let result = true;
         let err = [];
         const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        if (!reg.test(email) && email.trim().length > 0) {
+        if (!reg.test(email.trim()) && email.trim().length > 0) {
             err.push('Email is not valid.');
             result = false;
         }
@@ -156,7 +156,7 @@ const LoginScreen = () => {
         let result = true;
         let err = [];
         const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        if (!reg.test(email) && email.trim().length > 0) {
+        if (!reg.test(email.trim()) && email.trim().length > 0) {
             err.push('Email is not valid.');
             result = false;
         }
@@ -179,10 +179,12 @@ const LoginScreen = () => {
                 .get();
             
             if (user.docs.length > 0) {
-                AsyncStorage.setItem('userId', user.docs[0].id);
+                userToken = user.docs[0].id;
+                console.log(userToken);
+                AsyncStorage.setItem('userId', userToken);
                 // DevSettings.reload();
                 // userData = user.docs[0].data();
-                dispatch({ type: 'SIGN_IN', userToken: user.docs[0].id, userData: user.docs[0].data() });
+                dispatch({ type: 'SIGN_IN', userToken: userToken, userData: user.docs[0].data() });
             } else {
                 setErrors(['Incorrect Credentials. Please try again.']);
             }

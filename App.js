@@ -24,15 +24,15 @@ const App = () => {
   
   React.useEffect(() => {
     const getTokenAsync = async () => {
-      var userToken1;
+      
       // await AsyncStorage.clear();
       try {
         await AsyncStorage.getItem('userId').then(res1 => {  
-          userToken1 = res1;
-          console.log(userToken1);
-          return db.collection('user').doc(String(userToken1)).get();
+          userToken = res1;
+         
+          return db.collection('user').doc(String(userToken)).get();
         }).then(res2 => {
-          dispatch({ type: 'RESTORE_TOKEN', userToken: userToken1, userData: res2.data() });
+          dispatch({ type: 'RESTORE_TOKEN', userToken: userToken, userData: res2.data() });
         })
       } catch (err) {
         console.log(err);
@@ -48,7 +48,7 @@ const App = () => {
           <SplashScreen />
         ) : state.userGuide ? (
           <GuideScreen /> 
-        ) : state.userToken === null ? (
+        ) : (state.userToken === null) ? (
           <AuthStack />
         ) : (
           <MainStack />

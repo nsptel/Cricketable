@@ -10,7 +10,7 @@ const { styles } = require('../style');
 export default GuideScreen = () => {
     const { state, dispatch } = React.useContext(AuthContext);
     const closeGuide = async () => {
-        var userToken = '';
+        var userToken;
         var userData;
         
         await AsyncStorage.getItem('userId').then((res) =>{ 
@@ -35,7 +35,7 @@ export default GuideScreen = () => {
                     <YoutubePlayer
                         height={250}
                         width={400}
-                        play={true}
+                        play={false}
                         videoId={'AqtpNkMvj5Y'}
                     />
                     

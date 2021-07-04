@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TouchableOpacity, Text, Image, ScrollView, View, DevSettings } from 'react-native';
+import { Pressable, TouchableOpacity, Text, Image, ScrollView, View, DevSettings } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../context';
@@ -14,14 +14,13 @@ const ProfileScreen = () => {
     const logout = async () => {
         
         await AsyncStorage.clear();
+        
         dispatch({ type: 'SIGN_OUT', userToken: null, userData: null});
     }
 
-    // const guidePage = () => {
-        
-    //     navigation.navigate(GuideScreen);
-    // }
-
+    const guidePage = () => {
+        dispatch({type: 'SIGN_IN', userToken: userToken, userGuide: true});
+    }
 
     return (
         <ScrollView>
@@ -31,12 +30,12 @@ const ProfileScreen = () => {
                         <Image style={profileStyles.avatar}
                             source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar1.png' }} />
                             
-                        <Text style={[profileStyles.name, styles.bigText]}>{'x'}</Text>
+                        <Text style={[profileStyles.name, styles.bigText]}>{state.userData.first_name + ' ' + state.userData.last_name}</Text>
                         <Text style={profileStyles.name}>
-                            <Ionicons name={"ios-mail-open-outline"} size={16} color={"white"} /> {'x'}
+                            <Ionicons name={"ios-mail-open-outline"} size={16} color={"white"} /> {state.userData.email}
                         </Text>
                         <Text style={profileStyles.name}>
-                            <Ionicons name={"ios-location-outline"} size={16} color={"white"} /> {'x'}
+                            <Ionicons name={"ios-location-outline"} size={16} color={"white"} /> {state.userData.city}
                         </Text>
                     </View>
                 </View>
@@ -53,11 +52,12 @@ const ProfileScreen = () => {
                                 <Ionicons name={"ios-settings-outline"} size={18} color={"black"} />  Settings
                             </Text>
                         </TouchableOpacity>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={guidePage}>
                             <Text style={[profileStyles.option, styles.bigText]}>
-                                <Ionicons name={"ios-settings-outline"} size={18} color={"black"} />  Tutorials
+                                <Ionicons name={"ios-book-outline"} size={18} color={"black"} />  Tutorials
                             </Text>
                         </TouchableOpacity>
+                        
                     </View>
                     <View style={{ borderTopWidth: 1, borderTopColor: '#bbb' }}>
                         <TouchableOpacity onPress={logout}>
