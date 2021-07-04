@@ -1,20 +1,30 @@
 import * as React from 'react';
-import { useState } from 'react';
 import { Text, Pressable, ScrollView, View, Button, Linking } from 'react-native';
 import AuthContext from '../../context';
 import HeaderComponent from './header';
 import YoutubePlayer from 'react-native-youtube-iframe';
-import { Link } from 'react-router-dom';
+import AsyncStorage from '@react-native-async-storage/async-storage';
   
 const { styles } = require('../style');
 
 export default GuideScreen = () => {
     const { state, dispatch } = React.useContext(AuthContext);
-    const closeGuide = () => {
-        dispatch({type: 'SIGN_IN', userToken: state.userToken, userData: state.userData, userGuide: false});
-        // console.log(userData);
-        // console.log(userToken);
+    const closeGuide = async () => {
+        var userToken = '';
+        var userData;
+        
+        await AsyncStorage.getItem('userId').then((res) =>{ 
+            userToken = String(res); 
+        });
+
+        await AsyncStorage.getItem('userData').then((res) =>{ 
+            userData  = res;
+        });
+
+        dispatch({type: 'SIGN_IN', userToken: userToken, userData: userData, userGuide: false});
+
     }
+
 
     return (
         

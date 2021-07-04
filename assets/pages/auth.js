@@ -59,11 +59,14 @@ const SignUpScreen = () => {
                 profile_pic: '/profile_pics/sample.png',
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
             }
+
+            await AsyncStorage.setItem('userData', JSON.stringify(userData));
             await db.collection('user')
                 .add(userData)
                 .then(async (doc) => {
                     try {
                         await AsyncStorage.setItem('userId', doc.id);
+                        
                     } catch (err) {
                         console.log(err);
                     }
@@ -174,9 +177,9 @@ const LoginScreen = () => {
                 .where('email', '==', email)
                 .where('password', '==', password)
                 .get();
-
+            
             if (user.docs.length > 0) {
-                await AsyncStorage.setItem('user', user.docs[0].id);
+                AsyncStorage.setItem('userId', user.docs[0].id);
                 // DevSettings.reload();
                 // userData = user.docs[0].data();
                 dispatch({ type: 'SIGN_IN', userToken: user.docs[0].id, userData: user.docs[0].data() });

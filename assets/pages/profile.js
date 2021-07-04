@@ -10,13 +10,11 @@ const { styles, profileStyles } = require('../style');
 const ProfileScreen = () => {
     const { state, dispatch } = React.useContext(AuthContext);
     
-
+    //state.userData.first_name + ' ' + state.userData.last_name 
     const logout = async () => {
         
-        await AsyncStorage.getAllKeys()
-        .then(keys => AsyncStorage.multiRemove(keys));
-        
-        dispatch({ type: 'SIGN_OUT', userData: null, userToken: null});
+        await AsyncStorage.clear();
+        dispatch({ type: 'SIGN_OUT', userToken: null, userData: null});
     }
 
     // const guidePage = () => {
@@ -32,12 +30,13 @@ const ProfileScreen = () => {
                     <View style={profileStyles.headerContent}>
                         <Image style={profileStyles.avatar}
                             source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar1.png' }} />
-                        <Text style={[profileStyles.name, styles.bigText]}>{ state.userData.first_name + ' ' + state.userData.last_name }</Text>
+                            
+                        <Text style={[profileStyles.name, styles.bigText]}>{'x'}</Text>
                         <Text style={profileStyles.name}>
-                            <Ionicons name={"ios-mail-open-outline"} size={16} color={"white"} /> {state.userData.email}
+                            <Ionicons name={"ios-mail-open-outline"} size={16} color={"white"} /> {'x'}
                         </Text>
                         <Text style={profileStyles.name}>
-                            <Ionicons name={"ios-location-outline"} size={16} color={"white"} /> {state.userData.city}
+                            <Ionicons name={"ios-location-outline"} size={16} color={"white"} /> {'x'}
                         </Text>
                     </View>
                 </View>

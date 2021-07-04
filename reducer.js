@@ -8,11 +8,12 @@ export const authReducer = (prevState, action) => {
                 isLoading: false,
             };
         case 'SIGN_IN':
+            
             return {
                 ...prevState,
                 userToken: action.userToken,
                 userData: action.userData,
-                userGuide: action.userGuide,
+                userGuide: false,
             };
         case 'SIGN_OUT':
             return {
