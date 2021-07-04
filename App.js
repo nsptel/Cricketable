@@ -5,13 +5,16 @@ const db = require('./db_conn');
 import AuthStack from './assets/stacks/AuthStack';
 import MainStack from './assets/stacks/MainStack';
 import SplashScreen from './assets/pages/loading';
+import GuideScreen from './assets/pages/guide';
 import { authReducer } from './reducer';
 import AuthContext from './context';
+
+
 
 const App = () => {
   const [state, dispatch] = React.useReducer(
     authReducer,
-    { userToken: null, isLoading: true, userData: null }
+    { userToken: null, userGuide: false, isLoading: true, userData: null }
   );
 
   const providerState = {
@@ -21,18 +24,11 @@ const App = () => {
 
   React.useEffect(() => {
     const getTokenAsync = async () => {
-      let userToken;
+  
       try {
-        // AsyncStorage.getItem('user')
-        //   .then(res => {
-        //     results.userToken = res;
-        //     return db.collection('user').doc(res).get();
-        //   }).then(res2 => {
-        //     results.userData = res2;
-        //   });
         await AsyncStorage.getItem('user').then(res1 => {
           userToken = res1;
-          return db.collection('user').doc(userToken).get();
+          return db.collection('user').doc(String(userToken)).get();
         }).then(res2 => {
           dispatch({ type: 'RESTORE_TOKEN', userToken: userToken, userData: res2.data() });
         })
@@ -48,6 +44,8 @@ const App = () => {
       <NavigationContainer>
         {state.isLoading ? (
           <SplashScreen />
+        ) : state.userGuide ? (
+          <GuideScreen />
         ) : state.userToken ? (
           <MainStack />
         ) : (

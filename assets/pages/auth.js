@@ -19,6 +19,7 @@ const SignUpScreen = () => {
     const [confirmPassword, setConfirmPassword] = React.useState('');
     const [city, setCity] = React.useState('');
     const [errors, setErrors] = React.useState([]);
+    const { state, dispatch } = React.useContext(AuthContext);
     const navigation = useNavigation();
 
     const validation = () => {
@@ -49,23 +50,25 @@ const SignUpScreen = () => {
 
     const signUp = async () => {
         if (validation()) {
+            const userData = {
+                first_name: first_name,
+                last_name: last_name,
+                email: email,
+                password: password,
+                city: city,
+                profile_pic: '/profile_pics/sample.png',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            }
             await db.collection('user')
-                .add({
-                    first_name: first_name,
-                    last_name: last_name,
-                    email: email,
-                    password: password,
-                    city: city,
-                    profile_pic: '/profile_pics/sample.png',
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                })
+                .add(userData)
                 .then(async (doc) => {
                     try {
                         await AsyncStorage.setItem('userId', doc.id);
                     } catch (err) {
                         console.log(err);
                     }
-                    navigation.navigate('Login');
+                    // navigation.navigate('Login');
+                    dispatch({type: 'SIGN_IN', userToken: doc.id, userData: userData, userGuide: true});
                 });
         }
     }
@@ -165,6 +168,7 @@ const LoginScreen = () => {
     }
 
     const login = async (email, password) => {
+        
         if (validation()) {
             const user = await db.collection('user')
                 .where('email', '==', email)
@@ -174,7 +178,7 @@ const LoginScreen = () => {
             if (user.docs.length > 0) {
                 await AsyncStorage.setItem('user', user.docs[0].id);
                 // DevSettings.reload();
-                userData = user.docs[0].data();
+                // userData = user.docs[0].data();
                 dispatch({ type: 'SIGN_IN', userToken: user.docs[0].id, userData: user.docs[0].data() });
             } else {
                 setErrors(['Incorrect Credentials. Please try again.']);

@@ -5,13 +5,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../context';
 
 const { styles, profileStyles } = require('../style');
+// const GuideScreen = require('./guide');
 
 const ProfileScreen = () => {
     const { state, dispatch } = React.useContext(AuthContext);
+    
+
     const logout = async () => {
-        await AsyncStorage.clear();
-        dispatch({ type: 'SIGN_OUT' });
+        
+        await AsyncStorage.getAllKeys()
+        .then(keys => AsyncStorage.multiRemove(keys));
+        
+        dispatch({ type: 'SIGN_OUT', userData: null, userToken: null});
     }
+
+    // const guidePage = () => {
+        
+    //     navigation.navigate(GuideScreen);
+    // }
+
 
     return (
         <ScrollView>
@@ -40,6 +52,11 @@ const ProfileScreen = () => {
                         <TouchableOpacity>
                             <Text style={[profileStyles.option, styles.bigText]}>
                                 <Ionicons name={"ios-settings-outline"} size={18} color={"black"} />  Settings
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity>
+                            <Text style={[profileStyles.option, styles.bigText]}>
+                                <Ionicons name={"ios-settings-outline"} size={18} color={"black"} />  Tutorials
                             </Text>
                         </TouchableOpacity>
                     </View>

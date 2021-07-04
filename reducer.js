@@ -11,13 +11,14 @@ export const authReducer = (prevState, action) => {
             return {
                 ...prevState,
                 userToken: action.userToken,
-                userData: action.userData
+                userData: action.userData,
+                userGuide: action.userGuide,
             };
         case 'SIGN_OUT':
             return {
                 ...prevState,
-                userToken: null,
-                userData: null
+                userToken: action.userToken,
+                userData: action.userData,
             };
     }
 };
