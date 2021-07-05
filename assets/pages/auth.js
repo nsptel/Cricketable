@@ -27,14 +27,14 @@ const SignUpScreen = () => {
         let result = true;
         let err = [];
         const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        if (!reg.test(email.trim()) && email.trim().length > 0) {
+        if (!reg.test(email) && email.length > 0) {
             err.push('Email is not valid.');
             result = false;
         }
 
-        if (email.trim().length == 0 || password.trim().length == 0
-            || first_name.trim().length == 0 || last_name.trim().length == 0
-            || city.trim().length == 0) {
+        if (email.length == 0 || password.length == 0
+            || first_name.length == 0 || last_name.length == 0
+            || city.length == 0) {
             err.push('One or more fields are empty.');
             result = false;
         }
@@ -50,29 +50,36 @@ const SignUpScreen = () => {
 
     const signUp = async () => {
         if (validation()) {
-            const userData = {
-                first_name: first_name,
-                last_name: last_name,
-                email: email,
-                password: password,
-                city: city,
-                profile_pic: '/profile_pics/sample.png',
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            }
+            const user = await db.collection('user')
+                .where('email', '==', email)
+                .get();
+            if (user.docs.length == 0) {
+                const userData = {
+                    first_name: first_name,
+                    last_name: last_name,
+                    email: email,
+                    password: password,
+                    city: city,
+                    profile_pic: '/profile_pics/sample.png',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                }
 
-            await AsyncStorage.setItem('userData', JSON.stringify(userData));
-            await db.collection('user')
-                .add(userData)
-                .then(async (doc) => {
-                    try {
-                        await AsyncStorage.setItem('userId', doc.id);
-                        
-                    } catch (err) {
-                        console.log(err);
-                    }
-                    // navigation.navigate('Login');
-                    dispatch({type: 'SIGN_IN', userToken: doc.id, userData: userData, userGuide: true});
-                });
+                await AsyncStorage.setItem('userData', JSON.stringify(userData));
+                await db.collection('user')
+                    .add(userData)
+                    .then(async (doc) => {
+                        try {
+                            await AsyncStorage.setItem('userId', doc.id);
+
+                        } catch (err) {
+                            console.log(err);
+                        }
+                        // navigation.navigate('Login');
+                        dispatch({ type: 'SIGN_IN', userToken: doc.id, userData: userData, userGuide: true });
+                    });
+            } else {
+                setErrors(['Email is already registered. Please try again.']);
+            }
         }
     }
 
@@ -90,21 +97,21 @@ const SignUpScreen = () => {
                     placeholder='Email'
                     autoCapitalize="none"
                     placeholderTextColor='#aaa'
-                    onChangeText={val => setEmail(val)}
+                    onChangeText={val => setEmail(val.trim())}
                 />
                 <TextInput
                     style={styles.input}
                     placeholder='First Name'
                     autoCapitalize="none"
                     placeholderTextColor='#aaa'
-                    onChangeText={val => setFirstName(val)}
+                    onChangeText={val => setFirstName(val.trim())}
                 />
                 <TextInput
                     style={styles.input}
                     placeholder='Last Name'
                     autoCapitalize="none"
                     placeholderTextColor='#aaa'
-                    onChangeText={val => setLastName(val)}
+                    onChangeText={val => setLastName(val.trim())}
                 />
                 <TextInput
                     style={styles.input}
@@ -112,7 +119,7 @@ const SignUpScreen = () => {
                     secureTextEntry={true}
                     autoCapitalize="none"
                     placeholderTextColor='#aaa'
-                    onChangeText={val => setPassword(val)}
+                    onChangeText={val => setPassword(val.trim())}
                 />
                 <TextInput
                     style={styles.input}
@@ -120,24 +127,19 @@ const SignUpScreen = () => {
                     secureTextEntry={true}
                     autoCapitalize="none"
                     placeholderTextColor='#aaa'
-                    onChangeText={val => setConfirmPassword(val)}
+                    onChangeText={val => setConfirmPassword(val.trim())}
                 />
                 <TextInput
                     style={styles.input}
                     placeholder='City'
                     autoCapitalize="none"
                     placeholderTextColor='#aaa'
-                    onChangeText={val => setCity(val)}
+                    onChangeText={val => setCity(val.trim())}
                 />
                 <Pressable
                     onPress={signUp}
                     style={styles.button}>
                     <Text style={[styles.invertText, styles.text]}>Sign Up</Text>
-                </Pressable>
-                <Text></Text>
-                <Text style={[styles.normalText, styles.text]}>Already Have an Account?</Text>
-                <Pressable onPress={() => navigation.navigate('Login')}>
-                    <Text style={[styles.link, styles.text]}>Login</Text>
                 </Pressable>
             </View>
         </ScrollView>
@@ -156,12 +158,12 @@ const LoginScreen = () => {
         let result = true;
         let err = [];
         const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        if (!reg.test(email.trim()) && email.trim().length > 0) {
+        if (!reg.test(email) && email.length > 0) {
             err.push('Email is not valid.');
             result = false;
         }
 
-        if (password.trim().length == 0 || email.trim().length == 0) {
+        if (password.length == 0 || email.length == 0) {
             err.push('One or more fields are empty.');
             result = false;
         }
@@ -171,19 +173,17 @@ const LoginScreen = () => {
     }
 
     const login = async (email, password) => {
-        
+
         if (validation()) {
             const user = await db.collection('user')
                 .where('email', '==', email)
                 .where('password', '==', password)
                 .get();
-            
+
             if (user.docs.length > 0) {
                 userToken = user.docs[0].id;
                 console.log(userToken);
                 AsyncStorage.setItem('userId', userToken);
-                // DevSettings.reload();
-                // userData = user.docs[0].data();
                 dispatch({ type: 'SIGN_IN', userToken: userToken, userData: user.docs[0].data() });
             } else {
                 setErrors(['Incorrect Credentials. Please try again.']);
@@ -206,7 +206,7 @@ const LoginScreen = () => {
                     placeholder='Email'
                     autoCapitalize="none"
                     placeholderTextColor='#aaa'
-                    onChangeText={val => setEmail(val)}
+                    onChangeText={val => setEmail(val.trim())}
                 />
                 <TextInput
                     style={styles.input}
@@ -214,17 +214,12 @@ const LoginScreen = () => {
                     secureTextEntry={true}
                     autoCapitalize="none"
                     placeholderTextColor='#aaa'
-                    onChangeText={val => setPassword(val)}
+                    onChangeText={val => setPassword(val.trim())}
                 />
                 <Pressable
                     onPress={() => login(email, password)}
                     style={styles.button}>
                     <Text style={[styles.invertText, styles.text]}>Login</Text>
-                </Pressable>
-                <Text></Text>
-                <Text style={[styles.normalText, styles.text]}>New Here?</Text>
-                <Pressable onPress={() => navigation.navigate('SignUp')}>
-                    <Text style={[styles.link, styles.text]}>Sign Up</Text>
                 </Pressable>
             </View>
         </ScrollView>
