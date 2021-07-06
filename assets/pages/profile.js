@@ -1,26 +1,30 @@
 import * as React from 'react';
-import { Pressable, TouchableOpacity, Text, Image, ScrollView, View, DevSettings } from 'react-native';
+import { TouchableOpacity, Text, Image, ScrollView, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../context';
+import { useNavigation } from '@react-navigation/native';
+import firebase from 'firebase';
 
 const { styles, profileStyles } = require('../style');
-// const GuideScreen = require('./guide');
 
-const ProfileScreen = () => {
+export default ProfileScreen = () => {
     const { state, dispatch } = React.useContext(AuthContext);
-    
-    //state.userData.first_name + ' ' + state.userData.last_name 
+    const [profilePicURL, setProfilePicURL] = React.useState('');
+    const navigation = useNavigation();
     const logout = async () => {
-        
         await AsyncStorage.clear();
-        
-        dispatch({ type: 'SIGN_OUT', userToken: null, userData: null});
+        dispatch({ type: 'SIGN_OUT', userToken: null, userData: null });
     }
 
     const guidePage = () => {
-        dispatch({type: 'SIGN_IN', userToken: userToken, userGuide: true});
+        dispatch({ type: 'SIGN_IN', userToken: userToken, userGuide: true });
     }
+
+    firebase.storage()
+        .ref(state.userData.profile_pic)
+        .getDownloadURL()
+        .then((url) => setProfilePicURL(url));
 
     return (
         <ScrollView>
@@ -28,8 +32,7 @@ const ProfileScreen = () => {
                 <View style={profileStyles.header}>
                     <View style={profileStyles.headerContent}>
                         <Image style={profileStyles.avatar}
-                            source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar1.png' }} />
-                            
+                            source={(profilePicURL !== '') ? { uri: profilePicURL } : null} />
                         <Text style={[profileStyles.name, styles.bigText]}>{state.userData.first_name + ' ' + state.userData.last_name}</Text>
                         <Text style={profileStyles.name}>
                             <Ionicons name={"ios-mail-open-outline"} size={16} color={"white"} /> {state.userData.email}
@@ -42,22 +45,17 @@ const ProfileScreen = () => {
                 <View style={profileStyles.body}>
                     <View>
                         <Text style={styles.smallText}>Preferences</Text>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate("Update Profile")}>
                             <Text style={[profileStyles.option, styles.bigText]}>
                                 <Ionicons name={"ios-create-outline"} size={18} color={"black"} />  Update Profile
                             </Text>
                         </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Text style={[profileStyles.option, styles.bigText]}>
-                                <Ionicons name={"ios-settings-outline"} size={18} color={"black"} />  Settings
-                            </Text>
-                        </TouchableOpacity>
+                        <Text style={[styles.smallText, { marginTop: 24 }]}>Other</Text>
                         <TouchableOpacity onPress={guidePage}>
                             <Text style={[profileStyles.option, styles.bigText]}>
                                 <Ionicons name={"ios-book-outline"} size={18} color={"black"} />  Tutorials
                             </Text>
                         </TouchableOpacity>
-                        
                     </View>
                     <View style={{ borderTopWidth: 1, borderTopColor: '#bbb' }}>
                         <TouchableOpacity onPress={logout}>
@@ -71,5 +69,3 @@ const ProfileScreen = () => {
         </ScrollView>
     );
 }
-
-module.exports = ProfileScreen;

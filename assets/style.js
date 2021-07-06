@@ -110,6 +110,11 @@ const profileStyles = StyleSheet.create({
         borderColor: "white",
         marginBottom: 10,
     },
+    smallAvatar: {
+        borderWidth: 0,
+        width: 18,
+        height: 18
+    },
     name: {
         fontSize: 14,
         paddingVertical: 8,

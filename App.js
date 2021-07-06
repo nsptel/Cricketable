@@ -9,8 +9,6 @@ import GuideScreen from './assets/pages/guide';
 import { authReducer } from './reducer';
 import AuthContext from './context';
 
-
-
 const App = () => {
   const [state, dispatch] = React.useReducer(
     authReducer,
@@ -21,15 +19,11 @@ const App = () => {
     state,
     dispatch
   }
-  
   React.useEffect(() => {
     const getTokenAsync = async () => {
-      
-      // await AsyncStorage.clear();
       try {
-        await AsyncStorage.getItem('userId').then(res1 => {  
+        await AsyncStorage.getItem('userId').then(res1 => {
           userToken = res1;
-         
           return db.collection('user').doc(String(userToken)).get();
         }).then(res2 => {
           dispatch({ type: 'RESTORE_TOKEN', userToken: userToken, userData: res2.data() });
@@ -47,7 +41,7 @@ const App = () => {
         {state.isLoading ? (
           <SplashScreen />
         ) : state.userGuide ? (
-          <GuideScreen /> 
+          <GuideScreen />
         ) : (state.userToken === null) ? (
           <AuthStack />
         ) : (
