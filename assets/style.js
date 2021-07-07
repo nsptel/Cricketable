@@ -39,6 +39,15 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         backgroundColor: accentColor,
     },
+    invertButton: {
+        paddingVertical: 16,
+        width: '90%',
+        borderRadius: 4,
+        borderColor: accentColor,
+        borderWidth: 1,
+        backgroundColor: "white",
+        marginBottom: 12,
+    },
     text: {
         fontSize: 14,
         lineHeight: 21,
