@@ -5,6 +5,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import ProfileStack from './ProfileStack';
 import firebase from 'firebase';
 import AuthContext from '../../context';
+import EventStack from './EventStack';
 
 const HomeScreen = require('../pages/home');
 const GroupsScreen = require('../pages/groups');
@@ -59,7 +60,7 @@ const MainStack = () => {
       />
       <Tab.Screen
         name="Events"
-        component={EventsScreen}
+        component={EventStack}
       />
       <Tab.Screen
         name="Profile"
