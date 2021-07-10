@@ -2,8 +2,7 @@ import * as React from 'react';
 import { Text, ScrollView, View, TouchableOpacity } from 'react-native';
 import HeaderComponent from './header';
 import { useNavigation } from '@react-navigation/native';
-import { Card, CardTitle, CardContent, CardAction, CardButton, CardImage } from 'react-native-material-cards'
-import * as firebase from 'firebase';
+import { Card, CardTitle, CardContent, CardText } from 'react-native-material-cards';
 
 
 const { styles } = require('../style');
@@ -13,35 +12,25 @@ const db = require('../../db_conn');
 export default EventsScreen = () => {
 
     const navigation = useNavigation();
+    const [categories, setCategories] = React.useState([]);
 
     const data = async () => {
-
-        var events = await firebase.database().ref('event').once('value',
-            function (AllEvents) {
-                AllEvents.forEach(
-                    function (event) {
-                        console.log(event.val());
-                        toggleCards(event);
-                    }
-                );
+        let tempCat = [];
+        db.collection('event').get().then(snap => {
+            snap.forEach(el => {
+                tempCat.push(
+                    <Card>
+                        <CardTitle>{el.data().image}</CardTitle>
+                        <CardText>
+                            {el.data().name}
+                        </CardText>
+                        <CardContent text={el.data().event_date} />
+                    </Card>
+                    // <Text>{el.data().name} - {el.data().description}</Text>
+                )
             });
-
-    }
-
-    const toggleCards = (event) => {
-        const catrgories = [];
-        // for (let event of listOfEvents) {
-        catrgories.push(
-
-            <Card shadow={4} style={{ minWidth: '450', margin: 'auto' }}>
-                <CardTitle style={{ height: '250px', background: event.image }}></CardTitle>
-                <CardText>
-                    {event.name}
-                </CardText>
-                <CardContent text={event.event_date} />
-            </Card>
-
-        )
+            setCategories(tempCat);
+        });
     }
 
     return (
@@ -54,14 +43,12 @@ export default EventsScreen = () => {
                         Create Event
                     </Text>
                 </TouchableOpacity>
-
-
                 <Text onPress={(data)}>Click</Text>
+                <>
+                    {categories}
+                </>
             </View>
         </ScrollView>
     );
 
 }
-
-
-//module.exports = EventsScreen;

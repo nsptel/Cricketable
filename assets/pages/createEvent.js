@@ -3,7 +3,7 @@ import { TextInput, Text, Pressable, ScrollView, View } from 'react-native';
 import firebase from 'firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../context';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import HeaderComponent from './header';
 
 
@@ -18,7 +18,8 @@ export default CreateEvent = () => {
     const [city, setCity] = React.useState('');
     const [errors, setErrors] = React.useState([]);
     const [eventPhoto, setEventPhoto] = React.useState(null);
-   
+    const navigation = useNavigation();
+
     const handleProfilePhoto = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -31,14 +32,14 @@ export default CreateEvent = () => {
         }
     };
 
-    const closeEvent = () => {
-        
+    const closeCreateEvent = () => {
+        navigation.navigate('Events');
     }
 
     return (
         <ScrollView keyboardShouldPersistTaps='handled'>
             <View style={styles.container}>
-               
+
                 {(errors.length > 0) ?
                     <View style={styles.errorBlock}>
                         {errors.map(el => (<Text style={styles.error} key={el}>{el}</Text>))}
@@ -65,7 +66,6 @@ export default CreateEvent = () => {
                     placeholderTextColor='#aaa'
                     onChangeText={val => setDateTime(val.trim())}
                 />
-                
                 <TextInput
                     style={styles.input}
                     placeholder='City'
@@ -83,12 +83,11 @@ export default CreateEvent = () => {
                     <Text style={[styles.text, styles.normalText]}>Choose Event Photo</Text>
                 </Pressable>
                 <Pressable
-                    
                     style={styles.guideButtons}>
                     <Text style={[styles.invertText, styles.text]}>Create</Text>
-                </Pressable> 
-                <Pressable 
-                    onPress={closeEvent}
+                </Pressable>
+                <Pressable
+                    onPress={closeCreateEvent}
                     style={styles.guideButtons}>
                     <Text style={[styles.invertText, styles.text]}>Cancel</Text>
                 </Pressable>
