@@ -8,7 +8,6 @@ import SplashScreen from './assets/pages/loading';
 import GuideScreen from './assets/pages/guide';
 import { authReducer } from './reducer';
 import AuthContext from './context';
-import CreateEvent from './assets/pages/createEvent'
 
 const App = () => {
   const [state, dispatch] = React.useReducer(
@@ -48,7 +47,6 @@ const App = () => {
         ) : (
           <MainStack />
         )}
-       
       </NavigationContainer>
     </AuthContext.Provider>
   );

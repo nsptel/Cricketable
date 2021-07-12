@@ -74,7 +74,6 @@ const SignUpScreen = () => {
                         } catch (err) {
                             console.log(err);
                         }
-                        // navigation.navigate('Login');
                         dispatch({ type: 'SIGN_IN', userToken: doc.id, userData: userData, userGuide: true });
                     });
             } else {

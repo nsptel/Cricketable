@@ -6,10 +6,9 @@ import ProfileStack from './ProfileStack';
 import firebase from 'firebase';
 import AuthContext from '../../context';
 import EventStack from './EventStack';
+import GroupStack from './GroupStack';
 
 const HomeScreen = require('../pages/home');
-const GroupsScreen = require('../pages/groups');
-const EventsScreen = require('../pages/events');
 const { profileStyles } = require('../style');
 const Tab = createMaterialBottomTabNavigator();
 const accentColor = 'purple';
@@ -56,7 +55,7 @@ const MainStack = () => {
       />
       <Tab.Screen
         name="Groups"
-        component={GroupsScreen}
+        component={GroupStack}
       />
       <Tab.Screen
         name="Events"

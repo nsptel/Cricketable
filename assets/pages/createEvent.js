@@ -1,16 +1,10 @@
 import * as React from 'react';
 import { TextInput, Text, Pressable, ScrollView, View } from 'react-native';
-import firebase from 'firebase';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import AuthContext from '../../context';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import HeaderComponent from './header';
-
+import { useNavigation } from '@react-navigation/native';
 
 const { styles } = require('../style');
 
-
-export default CreateEvent = () => {
+export default CreateEventScreen = () => {
 
     const [eventName, setEventName] = React.useState('');
     const [eventDesription, setEventDescription] = React.useState('');
