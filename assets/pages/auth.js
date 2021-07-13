@@ -1,14 +1,16 @@
 import * as React from 'react';
-import { TextInput, Text, Pressable, ScrollView, View } from 'react-native';
+import { TextInput, Text, Pressable, ScrollView, View, SafeAreaView } from 'react-native';
 import firebase from 'firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../context';
 import { useNavigation } from '@react-navigation/native';
 import HeaderComponent from './header';
-
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 
 const { styles } = require('../style');
 const db = require('../../db_conn');
+
 let userData;
 
 const SignUpScreen = () => {
@@ -21,6 +23,30 @@ const SignUpScreen = () => {
     const [errors, setErrors] = React.useState([]);
     const { state, dispatch } = React.useContext(AuthContext);
     const navigation = useNavigation();
+    //const [state, setState] = React.useState('');
+    const [geocode, setGeoCode] = React.useState(null);
+    const [location, setLocation] = React.useState(null);
+    const [txtArray, setTxtArray] = React.useState([]);
+
+    const getLocationAsync = async () => {
+        let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Highest });
+        const { latitude, longitude } = location.coords
+        getGeocodeAsync({ latitude, longitude })
+        setLocation({ latitude, longitude });
+
+    };
+
+    const getGeocodeAsync = async (location) => {
+        let geocode = await Location.reverseGeocodeAsync(location);
+        setGeoCode(geocode);
+        txtArray.push(<Text>{geocode ? geocode[0].street + '\n' : ""}</Text>)
+        txtArray.push(<Text> {geocode ? `${geocode[0].city}, ${geocode[0].isoCountryCode}` + '\n' : ""}</Text>)
+        txtArray.push(<Text>{location ? `${location.latitude}, ${location.longitude}` : ""}</Text>)
+        setTxtArray(txtArray);
+        
+    }
+
+
 
     const validation = () => {
         setErrors([]);
@@ -83,6 +109,8 @@ const SignUpScreen = () => {
     }
 
     return (
+
+
         <ScrollView keyboardShouldPersistTaps='handled'>
             <View style={styles.container}>
                 <HeaderComponent />
@@ -128,13 +156,22 @@ const SignUpScreen = () => {
                     placeholderTextColor='#aaa'
                     onChangeText={val => setConfirmPassword(val.trim())}
                 />
-                <TextInput
+
+                <Text onPress={getLocationAsync}
+                    style={[styles.invertText, styles.text, styles.button]}
+                >Get Location</Text>
+
+                <Text>{txtArray}</Text>
+                {/* <TextInput
                     style={styles.input}
                     placeholder='City'
                     autoCapitalize="none"
                     placeholderTextColor='#aaa'
                     onChangeText={val => setCity(val.trim())}
-                />
+                /> */}
+
+
+
                 <Pressable
                     onPress={signUp}
                     style={styles.button}>
@@ -142,6 +179,7 @@ const SignUpScreen = () => {
                 </Pressable>
             </View>
         </ScrollView>
+
     );
 }
 

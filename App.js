@@ -9,10 +9,11 @@ import GuideScreen from './assets/pages/guide';
 import { authReducer } from './reducer';
 import AuthContext from './context';
 
+
 const App = () => {
   const [state, dispatch] = React.useReducer(
     authReducer,
-    { userToken: null, userGuide: false, isLoading: true, userData: null }
+    { userToken: null, userGuide: false, isLoading: false, userData: null }
   );
 
   const providerState = {
