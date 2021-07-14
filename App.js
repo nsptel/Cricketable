@@ -20,21 +20,25 @@ const App = () => {
     state,
     dispatch
   }
+
   React.useEffect(() => {
+    userId = null;
     const getTokenAsync = async () => {
       try {
         await AsyncStorage.getItem('userId').then(res1 => {
-          userToken = res1;
-          return db.collection('user').doc(String(userToken)).get();
+          userId = res1;
+          return db.collection('user').doc(String(userId)).get();
         }).then(res2 => {
-          dispatch({ type: 'RESTORE_TOKEN', userToken: userToken, userData: res2.data() });
+          console.log(res2.data());
+          dispatch({ type: 'RESTORE_TOKEN', userToken: userId, userData: res2.data() });
         })
       } catch (err) {
         console.log(err);
       }
     }
     getTokenAsync();
-  });
+    return () => { userId = null; }
+  }, []);
 
   return (
     <AuthContext.Provider value={providerState}>

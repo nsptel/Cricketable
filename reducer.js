@@ -8,7 +8,6 @@ export const authReducer = (prevState, action) => {
                 isLoading: false,
             };
         case 'SIGN_IN':
-            
             return {
                 ...prevState,
                 userToken: action.userToken,

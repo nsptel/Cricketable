@@ -23,7 +23,6 @@ const SignUpScreen = () => {
     const [errors, setErrors] = React.useState([]);
     const { state, dispatch } = React.useContext(AuthContext);
     const navigation = useNavigation();
-    //const [state, setState] = React.useState('');
     const [geocode, setGeoCode] = React.useState(null);
     const [location, setLocation] = React.useState(null);
     const [txtArray, setTxtArray] = React.useState([]);
@@ -43,10 +42,7 @@ const SignUpScreen = () => {
         txtArray.push(<Text> {geocode ? `${geocode[0].city}, ${geocode[0].isoCountryCode}` + '\n' : ""}</Text>)
         txtArray.push(<Text>{location ? `${location.latitude}, ${location.longitude}` : ""}</Text>)
         setTxtArray(txtArray);
-        
     }
-
-
 
     const validation = () => {
         setErrors([]);
@@ -109,8 +105,6 @@ const SignUpScreen = () => {
     }
 
     return (
-
-
         <ScrollView keyboardShouldPersistTaps='handled'>
             <View style={styles.container}>
                 <HeaderComponent />
