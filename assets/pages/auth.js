@@ -6,7 +6,7 @@ import AuthContext from '../../context';
 import { useNavigation } from '@react-navigation/native';
 import HeaderComponent from './header';
 import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const { styles } = require('../style');
 const db = require('../../db_conn');
@@ -25,9 +25,14 @@ const SignUpScreen = () => {
     const navigation = useNavigation();
     const [geocode, setGeoCode] = React.useState(null);
     const [location, setLocation] = React.useState(null);
-    const [txtArray, setTxtArray] = React.useState([]);
+
 
     const getLocationAsync = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            setErrors('Permission to access location was denied');
+            return;
+        }
         let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Highest });
         const { latitude, longitude } = location.coords
         getGeocodeAsync({ latitude, longitude })
@@ -38,10 +43,11 @@ const SignUpScreen = () => {
     const getGeocodeAsync = async (location) => {
         let geocode = await Location.reverseGeocodeAsync(location);
         setGeoCode(geocode);
-        txtArray.push(<Text>{geocode ? geocode[0].street + '\n' : ""}</Text>)
-        txtArray.push(<Text> {geocode ? `${geocode[0].city}, ${geocode[0].isoCountryCode}` + '\n' : ""}</Text>)
-        txtArray.push(<Text>{location ? `${location.latitude}, ${location.longitude}` : ""}</Text>)
-        setTxtArray(txtArray);
+        let city = geocode[0].city + ', '
+            + geocode[0].region + ', '
+            + geocode[0].isoCountryCode;
+        setCity(city);
+
     }
 
     const validation = () => {
@@ -56,7 +62,7 @@ const SignUpScreen = () => {
 
         if (email.length == 0 || password.length == 0
             || first_name.length == 0 || last_name.length == 0
-            || city.length == 0) {
+            || city == '') {
             err.push('One or more fields are empty.');
             result = false;
         }
@@ -151,21 +157,20 @@ const SignUpScreen = () => {
                     onChangeText={val => setConfirmPassword(val.trim())}
                 />
 
-                <Text onPress={getLocationAsync}
-                    style={[styles.invertText, styles.text, styles.button]}
-                >Get Location</Text>
-
-                <Text>{txtArray}</Text>
-                {/* <TextInput
+                <TextInput
                     style={styles.input}
-                    placeholder='City'
                     autoCapitalize="none"
                     placeholderTextColor='#aaa'
-                    onChangeText={val => setCity(val.trim())}
-                /> */}
-
-
-
+                    editable={false}
+                    value={geocode == null ? 'City' : city}
+                />
+                <Pressable onPress={getLocationAsync} style={styles.invertButton}>
+                    
+                    <Text style={[styles.text, styles.normalText]}>
+                    <Ionicons name={"ios-location-outline"} size={16} color={"black"} /> Get Location
+                    </Text>
+                </Pressable>
+                <Text></Text>
                 <Pressable
                     onPress={signUp}
                     style={styles.button}>
@@ -173,7 +178,6 @@ const SignUpScreen = () => {
                 </Pressable>
             </View>
         </ScrollView>
-
     );
 }
 
