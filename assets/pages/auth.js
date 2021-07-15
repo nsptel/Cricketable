@@ -47,7 +47,6 @@ const SignUpScreen = () => {
             + geocode[0].region + ', '
             + geocode[0].isoCountryCode;
         setCity(city);
-
     }
 
     const validation = () => {
@@ -67,7 +66,12 @@ const SignUpScreen = () => {
             result = false;
         }
 
-        if (password !== confirmPassword) {
+        if (password.length < 8 || password.match(/[0-9]/g) === null
+            || password.match(/[A-Z]/g) === null || password.match(/[a-z]/g) === null
+            || password.includes('_' || '@' || '!')) {
+            err.push('Password should be at least 8 characters long and must contain lowercase letter, uppercase letter, number and special character (@, _ or !).');
+            result = false;
+        } else if (password !== confirmPassword) {
             err.push('Password and Confirm Password should be equal.');
             result = false;
         }
@@ -165,9 +169,9 @@ const SignUpScreen = () => {
                     value={geocode == null ? 'City' : city}
                 />
                 <Pressable onPress={getLocationAsync} style={styles.invertButton}>
-                    
+
                     <Text style={[styles.text, styles.normalText]}>
-                    <Ionicons name={"ios-location-outline"} size={16} color={"black"} /> Get Location
+                        <Ionicons name={"ios-location-outline"} size={16} color={"black"} /> Get Location
                     </Text>
                 </Pressable>
                 <Text></Text>
