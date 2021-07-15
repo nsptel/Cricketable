@@ -21,23 +21,24 @@ const SignUpScreen = () => {
     const [confirmPassword, setConfirmPassword] = React.useState('');
     const [city, setCity] = React.useState('');
     const [errors, setErrors] = React.useState([]);
+    const [locationErr, setLocationErr] = React.useState(null);
     const { state, dispatch } = React.useContext(AuthContext);
     const navigation = useNavigation();
     const [geocode, setGeoCode] = React.useState(null);
     const [location, setLocation] = React.useState(null);
 
-
     const getLocationAsync = async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-            setErrors('Permission to access location was denied');
-            return;
-        }
+        setLocationErr(null);
+        Location.requestForegroundPermissionsAsync().then(res => {
+            if (res.status !== 'granted') {
+                setLocationErr('Permission to access location was denied');
+                return;
+            }
+        });
         let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Highest });
         const { latitude, longitude } = location.coords
         getGeocodeAsync({ latitude, longitude })
         setLocation({ latitude, longitude });
-
     };
 
     const getGeocodeAsync = async (location) => {
@@ -168,8 +169,8 @@ const SignUpScreen = () => {
                     editable={false}
                     value={geocode == null ? 'City' : city}
                 />
+                {locationErr !== null && (<Text style={styles.error}>{locationErr}</Text>)}
                 <Pressable onPress={getLocationAsync} style={styles.invertButton}>
-
                     <Text style={[styles.text, styles.normalText]}>
                         <Ionicons name={"ios-location-outline"} size={16} color={"black"} /> Get Location
                     </Text>
@@ -221,7 +222,6 @@ const LoginScreen = () => {
 
             if (user.docs.length > 0) {
                 userToken = user.docs[0].id;
-                console.log(userToken);
                 AsyncStorage.setItem('userId', userToken);
                 dispatch({ type: 'SIGN_IN', userToken: userToken, userData: user.docs[0].data() });
             } else {

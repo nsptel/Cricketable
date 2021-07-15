@@ -36,7 +36,6 @@ const App = () => {
       }
     }
     getTokenAsync();
-    return () => { userId = null; }
   }, []);
 
   return (

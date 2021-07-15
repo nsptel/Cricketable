@@ -5,6 +5,8 @@ import AuthContext from '../../context';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import firebase from 'firebase';
+import * as Location from 'expo-location';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 
 const { styles } = require('../style');
@@ -19,13 +21,39 @@ export default ProfileUpdateScreen = () => {
     const [confirmPassword, setConfirmPassword] = React.useState('');
     const [city, setCity] = React.useState(state.userData.city);
     const [errors, setErrors] = React.useState([]);
+    const [locationErr, setLocationErr] = React.useState(null);
     const [profilePhoto, setProfilePhoto] = React.useState(null);
     const navigation = useNavigation();
+    const [geocode, setGeoCode] = React.useState(null);
+    const [location, setLocation] = React.useState(null);
+    let err = [];
+
+    const getLocationAsync = async () => {
+        setLocationErr(null);
+        Location.requestForegroundPermissionsAsync().then(res => {
+            if (res.status !== 'granted') {
+                setLocationErr('Permission to access location was denied');
+                return;
+            }
+        });
+        let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Highest });
+        const { latitude, longitude } = location.coords
+        getGeocodeAsync({ latitude, longitude })
+        setLocation({ latitude, longitude });
+    };
+
+    const getGeocodeAsync = async (location) => {
+        let geocode = await Location.reverseGeocodeAsync(location);
+        setGeoCode(geocode);
+        let city = geocode[0].city + ', '
+            + geocode[0].region + ', '
+            + geocode[0].isoCountryCode;
+        setCity(city);
+    }
 
     const validation = () => {
         setErrors([]);
         let result = true;
-        let err = [];
         const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         if (!reg.test(email) && email.length > 0) {
             err.push('Email is not valid.');
@@ -45,6 +73,7 @@ export default ProfileUpdateScreen = () => {
         }
 
         setErrors(err);
+        err = [];
         return result;
     }
 
@@ -77,8 +106,8 @@ export default ProfileUpdateScreen = () => {
                 let ref = firebase.storage().ref('/profile_pics').child(state.userToken);
                 ref.put(blob);
 
-                userData = {...userData, profile_pic: '/profile_pics/' + state.userToken};
-                await AsyncStorage.setItem('userData', JSON.stringify({profile_pic: state.userToken}));
+                userData = { ...userData, profile_pic: '/profile_pics/' + state.userToken };
+                await AsyncStorage.setItem('userData', JSON.stringify({ profile_pic: state.userToken }));
             }
             await AsyncStorage.setItem('userData', JSON.stringify(userData));
             await db.collection('user')
@@ -141,12 +170,19 @@ export default ProfileUpdateScreen = () => {
                 />
                 <TextInput
                     style={styles.input}
+                    editable={false}
                     placeholder='City'
                     autoCapitalize="none"
                     placeholderTextColor='#aaa'
                     defaultValue={state.userData.city}
                     onChangeText={val => setCity(val.trim())}
                 />
+                {locationErr !== null && (<Text style={styles.error}>{locationErr}</Text>)}
+                <Pressable onPress={getLocationAsync} style={styles.invertButton}>
+                    <Text style={[styles.text, styles.normalText]}>
+                        <Ionicons name={"ios-location-outline"} size={16} color={"black"} /> Get Location
+                    </Text>
+                </Pressable>
                 {profilePhoto && (
                     <Image
                         source={{ uri: profilePhoto }}
