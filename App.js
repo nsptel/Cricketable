@@ -29,7 +29,6 @@ const App = () => {
           userId = res1;
           return db.collection('user').doc(String(userId)).get();
         }).then(res2 => {
-          console.log(res2.data());
           dispatch({ type: 'RESTORE_TOKEN', userToken: userId, userData: res2.data() });
         })
       } catch (err) {
