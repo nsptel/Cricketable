@@ -20,6 +20,7 @@ export default GuideScreen = () => {
         await AsyncStorage.getItem('userData').then((res) => {
             userData = res;
         });
+        
         dispatch({ type: 'SIGN_IN', userToken: userToken, userData: userData, userGuide: false });
     }
 

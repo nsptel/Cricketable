@@ -18,7 +18,7 @@ export default ProfileScreen = () => {
     }
 
     const guidePage = () => {
-        dispatch({ type: 'SIGN_IN', userToken: userToken, userGuide: true });
+        dispatch({ type: 'SIGN_IN', userToken: state.userToken, userGuide: true });
     }
 
     firebase.storage()
