@@ -6,22 +6,19 @@ import YoutubePlayer from 'react-native-youtube-iframe';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { styles } = require('../style');
+const db = require('../../db_conn');
 
 export default GuideScreen = () => {
     const { state, dispatch } = React.useContext(AuthContext);
     const closeGuide = async () => {
-        var userToken;
-        var userData;
+        let userId;
 
-        await AsyncStorage.getItem('userId').then((res) => {
-            userToken = String(res);
+        await AsyncStorage.getItem('userId').then(res1 => {
+            userId = res1;
+            return db.collection('user').doc(String(userId)).get();
+        }).then(res2 => {
+            dispatch({ type: 'SIGN_IN', userToken: userId, userData: res2.data() });
         });
-
-        await AsyncStorage.getItem('userData').then((res) => {
-            userData = res;
-        });
-        
-        dispatch({ type: 'SIGN_IN', userToken: userToken, userData: userData, userGuide: false });
     }
 
     return (

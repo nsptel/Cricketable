@@ -22,7 +22,7 @@ export default GroupsScreen = () => {
     //                         title={el.data().name}
     //                     />
     //                     <CardTitle
-    //                         subtitle="date"
+    //                         subtitle={el.data().event_date.toDate().toString()}
     //                     />
     //                     <CardContent text={el.data().description} />
     //                     <CardAction
