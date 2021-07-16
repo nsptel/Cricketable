@@ -29,16 +29,22 @@ const SignUpScreen = () => {
 
     const getLocationAsync = async () => {
         setLocationErr(null);
-        Location.requestForegroundPermissionsAsync().then(res => {
-            if (res.status !== 'granted') {
-                setLocationErr('Permission to access location was denied');
-                return;
-            }
-        });
-        let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Highest });
-        const { latitude, longitude } = location.coords
-        getGeocodeAsync({ latitude, longitude })
-        setLocation({ latitude, longitude });
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            setLocationErr('Permission to access location was denied');
+            return;
+        }
+
+        const enabled = await Location.hasServicesEnabledAsync();
+        if (enabled) {
+            let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Highest });
+            const { latitude, longitude } = location.coords
+            getGeocodeAsync({ latitude, longitude })
+            setLocation({ latitude, longitude });
+        } else {
+            setLocationErr('Please enable location services in your device settings.');
+        }
+        return;
     };
 
     const getGeocodeAsync = async (location) => {
