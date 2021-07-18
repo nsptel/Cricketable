@@ -110,7 +110,13 @@ export default ProfileUpdateScreen = () => {
                 const blob = await imageResponse.blob();
 
                 let ref = firebase.storage().ref('/profile_pics').child(state.userToken);
-                ref.put(blob);
+                ref.put(blob, {
+                    metadata: {
+                        metadata: {
+                            firebaseStorageDownloadTokens: state.userToken
+                        }
+                    }
+                });
 
                 userData = { ...userData, profile_pic: '/profile_pics/' + state.userToken };
                 await AsyncStorage.setItem('userData', JSON.stringify({ profile_pic: state.userToken }));

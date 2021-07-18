@@ -46,7 +46,13 @@ export default CreateGroupScreen = () => {
                         const blob = await imageResponse.blob();
 
                         let ref = firebase.storage().ref('/group_pics').child(doc.id);
-                        ref.put(blob);
+                        ref.put(blob, {
+                            metadata: {
+                                metadata: {
+                                    firebaseStorageDownloadTokens: doc.id
+                                }
+                            }
+                        });
                     }
                     navigation.navigate("Groups");
                 });
