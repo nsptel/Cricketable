@@ -33,7 +33,7 @@ export default EventsScreen = () => {
                                 onPress={() => { navigation.navigate("Event Description") }}
                                 style={{ width: '100%' }}
                                 title="view event"
-                                color="purple"
+                                color="#3107cb"
                             />
                         </CardAction>
                     </Card>

@@ -32,7 +32,7 @@ export default GroupsScreen = () => {
                                 onPress={() => { navigation.navigate("Group Description", {groupId: el.id}) }}
                                 style={{ width: '100%' }}
                                 title="view group"
-                                color="purple"
+                                color="#3107cb"
                             />
                         </CardAction>
                     </Card>

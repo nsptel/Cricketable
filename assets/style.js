@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
 
-const accentColor = "purple";
+const accentColor = "#3107cb";
 
 const styles = StyleSheet.create({
     input: {

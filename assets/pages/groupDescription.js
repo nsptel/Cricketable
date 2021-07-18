@@ -30,7 +30,7 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
     return (
         <ScrollView keyboardShouldPersistTaps='handled'>
             <View style={styles.container}>
-                <TouchableOpacity onPress={() => navigation.navigate("Create Event")}
+                <TouchableOpacity onPress={() => navigation.navigate("Create Event", {groupId: route.params.groupId})}
                     style={styles.guideButtons}>
                     <Text style={[styles.invertText, styles.text]}>
                         Create Event

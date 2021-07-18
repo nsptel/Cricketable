@@ -11,7 +11,7 @@ import GroupStack from './GroupStack';
 const HomeScreen = require('../pages/home');
 const { profileStyles } = require('../style');
 const Tab = createMaterialBottomTabNavigator();
-const accentColor = 'purple';
+const accentColor = '#3107cb';
 
 const MainStack = () => {
   const [profilePicURL, setProfilePicURL] = React.useState('');

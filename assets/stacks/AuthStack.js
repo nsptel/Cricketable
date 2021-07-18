@@ -4,7 +4,7 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 const Tab = createMaterialBottomTabNavigator();
-const accentColor = 'purple';
+const accentColor = '#3107cb';
 
 const AuthStack = () => {
   return (
