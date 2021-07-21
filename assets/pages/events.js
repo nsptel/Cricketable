@@ -14,32 +14,45 @@ export default EventsScreen = () => {
 
     React.useEffect(() => {
         let tempCat = [];
+        let tmpArray = ['demo'];
         db.collection('event').get().then(snap => {
-            snap.forEach(el => {
-                tempCat.push(
-                    <Card key={el.id} style={{ width: '90%' }}>
-                        <CardImage
-                            source={{ uri: el.data().image }}
-                            title={el.data().name}
-                        />
-                        <CardTitle
-                            subtitle={el.data().event_date.toDate().toString()}
-                        />
-                        <CardContent text={el.data().description} />
-                        <CardAction
-                            separator={true}
-                            inColumn={false}>
-                            <CardButton
-                                onPress={() => { navigation.navigate("Event Description") }}
-                                style={{ width: '100%' }}
-                                title="view event"
-                                color="#3107cb"
+            let count = 0;
+            for (var i in snap.docs) {
+                const el = snap.docs[i];
+                
+                console.log(tmpArray.includes(el.id));
+                if (tmpArray.includes(el.id)) {
+                    break;
+                }else{
+                    tmpArray.push(el.id);
+                    tempCat.push(
+                        <Card key={el.id} style={{ width: '90%' }}>
+                            <CardImage
+                                source={{ uri: el.data().image }}
+                                title={el.data().name}
                             />
-                        </CardAction>
-                    </Card>
-                )
-            });
+                            <CardTitle
+                                subtitle={el.data().event_date.toDate().toString()}
+                            />
+                            <CardContent text={el.data().description} />
+                            <CardAction
+                                separator={true}
+                                inColumn={false}>
+                                <CardButton
+                                    onPress={() => { navigation.navigate("Event Description") }}
+                                    style={{ width: '100%' }}
+                                    title="view event"
+                                    color="#3107cb"
+                                />
+                            </CardAction>
+                        </Card>
+                    )
+                }
+                if (count > 9) { break; }
+                count++;
+            };
             setCategories(tempCat);
+
         });
     });
 
