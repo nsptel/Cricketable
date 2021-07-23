@@ -13,48 +13,36 @@ export default EventsScreen = () => {
     const [categories, setCategories] = React.useState([]);
 
     React.useEffect(() => {
-        let tempCat = [];
-        let tmpArray = ['demo'];
-        db.collection('event').get().then(snap => {
-            let count = 0;
-            for (var i in snap.docs) {
-                const el = snap.docs[i];
-                
-                console.log(tmpArray.includes(el.id));
-                if (tmpArray.includes(el.id)) {
-                    break;
-                }else{
-                    tmpArray.push(el.id);
-                    tempCat.push(
-                        <Card key={el.id} style={{ width: '90%' }}>
-                            <CardImage
-                                source={{ uri: el.data().image }}
-                                title={el.data().name}
+        const getAsyncData = async () => {
+            let tempCat = [];
+            db.collection('event').get().then(snap => {
+                tempCat = snap.docs.map(el => (
+                    <Card key={el.id} style={{ width: '90%' }}>
+                        <CardImage
+                            source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/event_pics%2F${el.id}?alt=media&token=${el.id}` }}
+                            title={el.data().name}
+                        />
+                        {/* <CardTitle
+                                subtitle={el.event_date.toDate().toString()}
+                            /> */}
+                        <CardContent text={el.data().description} />
+                        <CardAction
+                            separator={true}
+                            inColumn={false}>
+                            <CardButton
+                                onPress={() => { navigation.navigate("Event Description") }}
+                                style={{ width: '100%', backgroundColor: '#3107cb' }}
+                                title="view event"
+                                color="#3107cb"
                             />
-                            <CardTitle
-                                subtitle={el.data().event_date.toDate().toString()}
-                            />
-                            <CardContent text={el.data().description} />
-                            <CardAction
-                                separator={true}
-                                inColumn={false}>
-                                <CardButton
-                                    onPress={() => { navigation.navigate("Event Description") }}
-                                    style={{ width: '100%' }}
-                                    title="view event"
-                                    color="#3107cb"
-                                />
-                            </CardAction>
-                        </Card>
-                    )
-                }
-                if (count > 9) { break; }
-                count++;
-            };
-            setCategories(tempCat);
-
-        });
-    });
+                        </CardAction>
+                    </Card>
+                ));
+                setCategories(tempCat);
+            });
+        }
+        getAsyncData();
+    }, []);
 
     return (
         <ScrollView>
@@ -66,12 +54,5 @@ export default EventsScreen = () => {
             </View>
         </ScrollView>
     );
-    // return(
-    //     <ScrollView>
-    //             <View style={styles.container}>
-    //                 <HeaderComponent />
-    //                 <Text style={[styles.normalText, styles.text]}>This is the event page!</Text>
-    //             </View>
-    //         </ScrollView>
-    // )
+    
 }
