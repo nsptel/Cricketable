@@ -31,7 +31,7 @@ export default EventsScreen = () => {
                             inColumn={false}>
                             <CardButton
                                 onPress={() => { navigation.navigate("Event Description") }}
-                                style={{ width: '100%', backgroundColor: '#3107cb' }}
+                                style={{ width: '100%', backgroundColor: 'white' }}
                                 title="view event"
                                 color="#3107cb"
                             />
@@ -54,5 +54,4 @@ export default EventsScreen = () => {
             </View>
         </ScrollView>
     );
-    
 }
