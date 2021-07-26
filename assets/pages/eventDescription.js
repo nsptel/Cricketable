@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Text, Pressable, ScrollView, View, Image } from 'react-native';
+import { NavigationActions } from 'react-navigation';
 
 const { styles } = require('../style');
 const db = require('../../db_conn');
@@ -25,7 +26,7 @@ export default EventDescriptionScreen = ({ route, navigation }) => {
                     name: data.name,
                     address: data.address,
                     description: data.description,
-                    group: null,
+                    group: data.group.id,
                     event_date: data.event_date,
                     timestamp: data.timestamp,
                     image: data.image
@@ -44,6 +45,15 @@ export default EventDescriptionScreen = ({ route, navigation }) => {
                 <Text>{eventInfo.name}</Text>
                 <Text>{eventInfo.description}</Text>
                 <Text>{eventInfo.event_date && eventInfo.event_date.toDate().toString()}</Text>
+                <Pressable
+                    style={styles.invertButton}
+                    onPress={() => {
+                        navigation.navigate("Groups",
+                            {},
+                            NavigationActions.navigate({ routeName: "Group Description", params: {groupId: eventInfo.group} }))
+                    }}>
+                    <Text style={styles.text}>View Creator Group</Text>
+                </Pressable>
                 <Pressable
                     style={styles.button}
                     onPress={() => { navigation.navigate("Events") }}>

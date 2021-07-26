@@ -24,16 +24,14 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
                     description: data.description,
                     image: data.image,
                     name: data.name,
-                    timestamp: data.timestamp,
-                    user: null
+                    timestamp: data.timestamp
                 });
-
-                data.user.get().then((user) => {
-                    setGroupInfo(prevState => ({
-                        ...prevState,
-                        user: user.data()
-                    }));
-                });
+                return data.user.get();
+            }).then((userInfo) => {
+                setGroupInfo(prevState => ({
+                    ...prevState,
+                    user: userInfo.data()
+                }));
             });
     }, []);
 
