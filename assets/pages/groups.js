@@ -29,7 +29,7 @@ export default GroupsScreen = () => {
                             separator={true}
                             inColumn={false}>
                             <CardButton
-                                onPress={() => { navigation.navigate("Event Description") }}
+                                onPress={() => { navigation.navigate("Group Description", {groupId: el.id}) }}
                                 style={{ width: '100%', backgroundColor: 'white' }}
                                 title="view group"
                                 color="purple"

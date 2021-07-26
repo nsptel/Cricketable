@@ -1,15 +1,12 @@
 import * as React from 'react';
 import { ScrollView, View, Text } from 'react-native';
 import HeaderComponent from './header';
-import { useNavigation } from '@react-navigation/native';
 import { Card, CardTitle, CardContent, CardImage, CardAction, CardButton } from 'react-native-material-cards';
 
 const { styles } = require('../style');
 const db = require('../../db_conn');
 
-export default EventsScreen = () => {
-
-    const navigation = useNavigation();
+export default EventsScreen = ({ route, navigation }) => {
     const [categories, setCategories] = React.useState([]);
 
     React.useEffect(() => {
@@ -30,9 +27,9 @@ export default EventsScreen = () => {
                             separator={true}
                             inColumn={false}>
                             <CardButton
-                                onPress={() => { navigation.navigate("Event Description") }}
+                                onPress={() => { navigation.navigate("Event Description", {eventId: el.id}) }}
                                 style={{ width: '100%', backgroundColor: 'white' }}
-                                title="view event"
+                                title="View Event"
                                 color="#3107cb"
                             />
                         </CardAction>
