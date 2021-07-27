@@ -1,11 +1,14 @@
 import * as React from 'react';
-import { Text, TouchableOpacity, ScrollView, View } from 'react-native';
+import { Text, TouchableOpacity, Pressable, ScrollView, View } from 'react-native';
+import AuthContext from '../../context';
 
 const { styles } = require('../style');
 const db = require('../../db_conn');
 
 export default GroupDescriptionScreen = ({ route, navigation }) => {
-
+    const { state, dispatch } = React.useContext(AuthContext);
+    const groupId = route.params.groupId;
+    const [member, setMember] = React.useState('');
     const [groupInfo, setGroupInfo] = React.useState({
         description: '',
         image: '',
@@ -33,7 +36,36 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
                     user: userInfo.data()
                 }));
             });
+
+        db.collection('members')
+            .where('userId', '==', state.userToken)
+            .where('groupId', '==', groupId)
+            .get()
+            .then((snap) => {
+                if (snap.docs.length > 0) {
+                    setMember(snap.docs[0].id);
+                }
+            })
     }, []);
+
+    const joinGroup = async () => {
+        db.collection('members')
+            .add({
+                userId: state.userToken,
+                groupId: groupId
+            }).then((doc) => {
+                setMember(doc.id);
+            });
+    }
+
+    const leaveGroup = async () => {
+        db.collection('members')
+            .doc(member)
+            .delete()
+            .then(() => {
+                setMember('');
+            })
+    }
 
     return (
         <ScrollView keyboardShouldPersistTaps='handled'>
@@ -45,6 +77,18 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
                     </Text>
                 </TouchableOpacity>
                 <Text>This is the description of the group {groupInfo.user && groupInfo.user.first_name}.</Text>
+                {(member !== '') ? (
+                    <Pressable
+                        style={styles.button}
+                        onPress={() => leaveGroup()}>
+                        <Text style={[styles.invertText, styles.text]}>Leave Group</Text>
+                    </Pressable>) : (
+                    <Pressable
+                        style={styles.button}
+                        onPress={() => joinGroup()}>
+                        <Text style={[styles.invertText, styles.text]}>Join</Text>
+                    </Pressable>
+                )}
             </View>
         </ScrollView>
     )
