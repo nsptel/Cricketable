@@ -19,15 +19,15 @@ export default EventsScreen = ({ route, navigation }) => {
                             source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/event_pics%2F${el.id}?alt=media&token=${el.id}` }}
                             title={el.data().name}
                         />
-                        {/* <CardTitle
-                                subtitle={el.event_date.toDate().toString()}
-                            /> */}
+                        <CardTitle
+                            subtitle={el.data().event_date.toDate().toString()}
+                        />
                         <CardContent text={el.data().description} />
                         <CardAction
                             separator={true}
                             inColumn={false}>
                             <CardButton
-                                onPress={() => { navigation.navigate("Event Description", {eventId: el.id}) }}
+                                onPress={() => { navigation.navigate("Event Description", { eventId: el.id }) }}
                                 style={{ width: '100%', backgroundColor: 'white' }}
                                 title="View Event"
                                 color="#3107cb"

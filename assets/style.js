@@ -17,7 +17,8 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '500',
     },
-    guideButtons: {paddingHorizontal: 8,
+    guideButtons: {
+        paddingHorizontal: 8,
         paddingVertical: 16,
         color: 'black',
         borderRadius: 3,
@@ -38,6 +39,7 @@ const styles = StyleSheet.create({
         width: '90%',
         borderRadius: 4,
         backgroundColor: accentColor,
+        marginBottom: 12,
     },
     invertButton: {
         paddingVertical: 16,
@@ -98,6 +100,13 @@ const styles = StyleSheet.create({
         backgroundColor: '#fccaca',
         width: '90%',
         marginVertical: 10,
+    },
+    subtitle: {
+        fontSize: 16,
+        alignSelf: 'flex-start',
+        paddingHorizontal: '5%',
+        lineHeight: 20,
+        paddingVertical: 10,
     }
 });
 
@@ -123,6 +132,11 @@ const profileStyles = StyleSheet.create({
         borderWidth: 0,
         width: 18,
         height: 18
+    },
+    bigAvatar: {
+        borderRadius: 100,
+        width: 200,
+        height: 200,
     },
     name: {
         fontSize: 14,
