@@ -30,7 +30,6 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        justifyContent: 'flex-start',
         alignItems: 'center',
         marginTop: Constants.statusBarHeight,
     },
@@ -80,7 +79,7 @@ const styles = StyleSheet.create({
         color: 'black'
     },
     link: {
-        color: '#2071f5',
+        color: accentColor,
     },
     smallText: {
         fontSize: 12,
@@ -107,6 +106,23 @@ const styles = StyleSheet.create({
         paddingHorizontal: '5%',
         lineHeight: 20,
         paddingVertical: 10,
+    },
+    flatListHeader: {
+        fontSize: 24,
+        paddingHorizontal: '5%',
+        alignSelf: 'flex-start',
+        paddingVertical: 5,
+    },
+    flatListItem: {
+        paddingHorizontal: '5%',
+        paddingVertical: 5,
+        alignSelf: 'flex-start',
+        justifyContent: 'flex-start',
+    },
+    flatListText: {
+        fontSize: 16,
+        alignSelf: 'flex-start',
+        justifyContent: 'flex-start',
     }
 });
 

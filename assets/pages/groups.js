@@ -18,18 +18,18 @@ export default GroupsScreen = () => {
                 tempCat = snap.docs.map(el => (
                     <Card key={el.id} style={{ width: '90%' }}>
                         <CardImage
-                            source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/group_pics%2F${el.id}?alt=media&token=${el.id}` }}
+                            source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/group_pics%2F${(el.data().image == 'id' ? 'sample.png' : el.id)}?alt=media&token=${(el.data().image == 'id' ? 'f689636c-d0cf-4471-882b-f717cea5bd53' : el.id)}` }}
                             title={el.data().name}
                         />
-                        {/* <CardTitle
-                                subtitle={el.event_date.toDate().toString()}
-                            /> */}
+                        <CardTitle
+                            subtitle={el.data().timestamp.toDate().toString()}
+                        />
                         <CardContent text={el.data().description} />
                         <CardAction
                             separator={true}
                             inColumn={false}>
                             <CardButton
-                                onPress={() => { navigation.navigate("Group Description", {groupId: el.id}) }}
+                                onPress={() => navigation.navigate("Group Description", { groupId: el.id }) }
                                 style={{ width: '100%', backgroundColor: 'white' }}
                                 title="view group"
                                 color="purple"

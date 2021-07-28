@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Text, TouchableOpacity, Pressable, ScrollView, View, SafeAreaView, FlatList } from 'react-native';
+import { Text, Image, TouchableOpacity, Pressable, View, SafeAreaView, FlatList } from 'react-native';
 import AuthContext from '../../context';
 import firebase from 'firebase';
 
-const { styles } = require('../style');
+const { styles, profileStyles } = require('../style');
 const db = require('../../db_conn');
 
 export default GroupDescriptionScreen = ({ route, navigation }) => {
@@ -14,7 +14,7 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
     const [groupEvents, setGroupEvents] = React.useState([]);
     const [groupInfo, setGroupInfo] = React.useState({
         description: '',
-        image: '',
+        image: null,
         name: '',
         timestamp: null,
         user: null
@@ -39,7 +39,7 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
             }).then((userInfo) => {
                 setGroupInfo(prevState => ({
                     ...prevState,
-                    user: userInfo.data()
+                    user: { id: userInfo.id, ...userInfo.data() }
                 }));
             });
 
@@ -140,6 +140,17 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
+            {(groupInfo.image === null || groupInfo.image === 'id') ? (
+                <Image
+                    source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/group_pics%2Fsample.png?alt=media&token=f689636c-d0cf-4471-882b-f717cea5bd53' }}
+                    style={[profileStyles.avatar, profileStyles.bigAvatar]}
+                />
+            ) : (
+                <Image
+                    source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/group_pics%2F${groupInfo.image.trim()}?alt=media&token=${groupInfo.image.trim()}` }}
+                    style={[profileStyles.avatar, profileStyles.bigAvatar]}
+                />
+            )}
             <TouchableOpacity onPress={() => navigation.navigate("Create Event", { groupId: route.params.groupId })}
                 style={styles.guideButtons}>
                 <Text style={[styles.invertText, styles.text]}>
@@ -147,30 +158,36 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
                 </Text>
             </TouchableOpacity>
             <Text>This is the description of the group {groupInfo.user && groupInfo.user.first_name}.</Text>
-            <Text style={{ fontSize: 24 }}>Group Members</Text>
-            {groupMembers !== [] ? (<FlatList
+            <Text style={styles.flatListHeader}>Group Members</Text>
+            {groupMembers.length > 0 ? (<FlatList
                 data={groupMembers}
                 keyExtractor={item => item.id}
                 renderItem={({ item }) => (
-                    <View>
-                        <Text>{item.name}</Text>
-                        <Text>{item.email}</Text>
+                    <View style={styles.flatListItem}>
+                        <Text style={styles.flatListText}>{item.name + (groupInfo.user && (item.id == groupInfo.user.id) ? ' (Admin)' : '')}</Text>
+                        <Text style={[styles.flatListText, styles.smallText]}>{item.email}</Text>
                     </View>
                 )}
+                style={{ alignSelf: 'flex-start', paddingHorizontal: '5%' }}
             />) : (
-                <Text>This group does not have any members.</Text>
+                <Text style={styles.flatListItem}>This group does not have any members.</Text>
             )}
-            <Text style={{ fontSize: 24 }}>Group Events</Text>
-            {groupEvents !== [] ? (<FlatList
+            <Text style={styles.flatListHeader}>Group Events</Text>
+            {groupEvents.length > 0 ? (<FlatList
                 data={groupEvents}
                 keyExtractor={item => item.id}
                 renderItem={({ item }) => (
-                    <View>
-                        <Text>{item.name}</Text>
-                    </View>
+                    <Pressable
+                        style={styles.flatListItem}
+                        onPress={() => {
+                            navigation.navigate('Events', { screen: 'Event Description', params: { eventId: item.id } })
+                        }}>
+                        <Text style={[styles.flatListText, { color: '#3107cb' }]}>{item.name}</Text>
+                    </Pressable>
                 )}
+                style={{ alignSelf: 'flex-start', paddingHorizontal: '5%' }}
             />) : (
-                <Text>This group does not have any events.</Text>
+                <Text style={styles.flatListItem}>This group does not have any events.</Text>
             )}
             {(member !== '') ? (
                 <Pressable

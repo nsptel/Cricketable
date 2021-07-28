@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Text, Pressable, ScrollView, View, Image } from 'react-native';
-import { roundToNearestPixel } from 'react-native/Libraries/Utilities/PixelRatio';
 import AuthContext from '../../context';
 
 const { styles, profileStyles } = require('../style');
@@ -17,7 +16,7 @@ export default EventDescriptionScreen = ({ route, navigation }) => {
         group: null,
         event_date: null,
         timestamp: null,
-        image: ''
+        image: null
     });
 
     React.useEffect(() => {
@@ -76,10 +75,17 @@ export default EventDescriptionScreen = ({ route, navigation }) => {
     return (
         <ScrollView keyboardShouldPersistTaps="handled">
             <View style={styles.container}>
-                <Image
-                    source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/event_pics%2F${eventId}?alt=media&token=${eventId}` }}
-                    style={[profileStyles.avatar, profileStyles.bigAvatar]}
-                />
+                {(eventInfo.image === null || eventInfo.image === 'id') ? (
+                    <Image
+                        source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/event_pics%2Fsample.png?alt=media&token=84f8905a-bde0-4cd6-bd80-760dcd3fc0f0' }}
+                        style={[profileStyles.avatar, profileStyles.bigAvatar]}
+                    />
+                ) : (
+                    <Image
+                        source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/event_pics%2F${eventInfo.image.trim()}?alt=media&token=${eventInfo.image.trim()}` }}
+                        style={[profileStyles.avatar, profileStyles.bigAvatar]}
+                    />
+                )}
                 <Text style={{ fontSize: 24 }}>{eventInfo.name}</Text>
                 <Text style={styles.subtitle}>{eventInfo.description}</Text>
                 <Text style={styles.subtitle}>This event is organized at {eventInfo.address} on {eventInfo.event_date && getFormattedDate(eventInfo.event_date.toDate())}.</Text>
