@@ -93,7 +93,7 @@ export default EventDescriptionScreen = ({ route, navigation }) => {
                     style={styles.invertButton}
                     onPress={() => {
                         navigation.navigate("Groups",
-                            { screen: "Group Description", params: { groupId: eventInfo.group } })
+                            { screen: "Group Description", initial: false, params: { groupId: eventInfo.group } })
                     }}>
                     <Text style={styles.text}>View Related Group</Text>
                 </Pressable>
