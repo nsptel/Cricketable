@@ -70,7 +70,7 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
                                 const el = userData.docs[i];
                                 members.push(
                                     <View key={el.id} style={styles.flatListItem}>
-                                        <Text style={styles.flatListText}>{el.data().first_name + ' ' + el.data().last_name + (groupInfo.user && (groupInfo.id == groupInfo.user.id) ? ' (Admin)' : '')}</Text>
+                                        <Text style={styles.flatListText}>{el.data().first_name + ' ' + el.data().last_name + (groupInfo.user && (el.id == groupInfo.user.id) ? ' (Admin)' : '')}</Text>
                                         <Text style={[styles.flatListText, styles.smallText]}>{el.data().email}</Text>
                                     </View>
                                 );
@@ -159,7 +159,8 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
                 )}
                 <Text style={{ fontSize: 28 }}>{groupInfo.name}</Text>
                 <Text style={styles.subtitle}>{groupInfo.description}</Text>
-                <Text style={styles.subtitle}>Created on {groupInfo.timestamp.toDate().toString()}</Text>
+                <Text style={styles.subtitle}>Created on {groupInfo.timestamp && groupInfo.timestamp.toDate().toString()}</Text>
+                <Text></Text>
                 <Text style={styles.flatListHeader}>Group Members</Text>
                 {groupMembers.length > 0 ? (
                     <>
@@ -168,6 +169,7 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
                 ) : (
                     <Text style={styles.flatListItem}>This group does not have any members.</Text>
                 )}
+                <Text></Text>
                 <Text style={styles.flatListHeader}>Group Events</Text>
                 {groupEvents.length > 0 ? (
                     <>
@@ -176,12 +178,25 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
                 ) : (
                     <Text style={styles.flatListItem}>This group does not have any events.</Text>
                 )}
+                <Text></Text>
                 <TouchableOpacity onPress={() => navigation.navigate("Create Event", { groupId: route.params.groupId })}
                     style={styles.guideButtons}>
                     <Text style={[styles.invertText, styles.text]}>
                         Create Event
                     </Text>
                 </TouchableOpacity>
+                {(member !== '') ? (
+                    <Pressable
+                        style={styles.button}
+                        onPress={() => leaveGroup()}>
+                        <Text style={[styles.invertText, styles.text]}>Leave Group</Text>
+                    </Pressable>) : (
+                    <Pressable
+                        style={styles.button}
+                        onPress={() => joinGroup()}>
+                        <Text style={[styles.invertText, styles.text]}>Join</Text>
+                    </Pressable>
+                )}
             </View>
         </ScrollView>
     )

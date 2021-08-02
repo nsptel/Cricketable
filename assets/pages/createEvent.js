@@ -89,7 +89,8 @@ export default CreateEventScreen = ({ route, navigation }) => {
                     image: eventPhoto === '/event_pics/sample.png' ? eventPhoto : 'id',
                     group: db.doc('group/' + route.params.groupId),
                     address: address,
-                    event_date: firebase.firestore.Timestamp.fromDate(date)
+                    event_date: firebase.firestore.Timestamp.fromDate(date),
+                    name_lc: eventName.toLowerCase()
                 }).then(async (doc) => {
                     if (eventPhoto !== '/event_pics/sample.png') {
                         const imageResponse = await fetch(eventPhoto);

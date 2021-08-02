@@ -40,6 +40,7 @@ export default CreateGroupScreen = () => {
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                     image: groupPhoto === '/group_pics/sample.png' ? groupPhoto : 'id',
                     user: db.doc('user/' + state.userToken),
+                    name_lc: groupName.toLowerCase()
                 }).then(async (doc) => {
                     if (groupPhoto !== '/group_pics/sample.png') {
                         const imageResponse = await fetch(groupPhoto);
