@@ -18,9 +18,9 @@ export default GroupsScreen = () => {
             <Card key={el.id} style={{ width: '90%' }}>
                 <CardImage
                     source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/group_pics%2F${(el.data().image == 'id' ? 'sample.png' : el.id)}?alt=media&token=${(el.data().image == 'id' ? 'f689636c-d0cf-4471-882b-f717cea5bd53' : el.id)}` }}
-                    title={el.data().name}
                 />
                 <CardTitle
+                    title={el.data().name}
                     subtitle={el.data().timestamp.toDate().toString()}
                 />
                 <CardContent text={el.data().description} />

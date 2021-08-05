@@ -29,10 +29,10 @@ export default HomeScreen = () => {
                 tempCat = snap.docs.map(el => (
                     <Card key={el.id} style={{ width: '90%' }}>
                         <CardImage
-                            source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/group_pics%2F${el.id}?alt=media&token=${el.id}` }}
-                            title={el.data().name}
+                            source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/group_pics%2F${(el.data().image == 'id' ? 'sample.png' : el.id)}?alt=media&token=${(el.data().image == 'id' ? 'f689636c-d0cf-4471-882b-f717cea5bd53' : el.id)}` }}
                         />
                         <CardTitle
+                            title={el.data().name}
                             subtitle={el.data().timestamp.toDate().toString()}
                         />
                         <CardContent text={el.data().description} />
@@ -58,10 +58,10 @@ export default HomeScreen = () => {
                 tempCat2 = snap.docs.map(el => (
                     <Card key={el.id} style={{ width: '90%' }}>
                         <CardImage
-                            source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/event_pics%2F${el.id}?alt=media&token=${el.id}` }}
-                            title={el.data().name}
+                            source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/event_pics%2F${(el.data().image === 'id' ? 'sample.png' : el.id)}?alt=media&token=${(el.data().image === 'id' ? '84f8905a-bde0-4cd6-bd80-760dcd3fc0f0' : el.id)}` }}
                         />
                         <CardTitle
+                            title={el.data().name}
                             subtitle={el.data().event_date.toDate().toString()}
                         />
                         <CardContent text={el.data().description} />
@@ -83,16 +83,16 @@ export default HomeScreen = () => {
         getAsyncData();
     }, []);
 
-    onchange = (nativeEvent , replace) => {
+    onchange = (nativeEvent, replace) => {
         const slide = Math.ceil(nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width);
-        if(nativeEvent){
-            if(replace == 'grp'){
-                if(slide != grpimgActive){
+        if (nativeEvent) {
+            if (replace == 'grp') {
+                if (slide != grpimgActive) {
                     setgrpImgActive(slide);
                 }
             }
-            if(replace == 'evt'){
-                if(slide != evtimgActive){
+            if (replace == 'evt') {
+                if (slide != evtimgActive) {
                     setevtImgActive(slide);
                 }
             }
@@ -107,44 +107,43 @@ export default HomeScreen = () => {
                 <Text style={{ fontSize: 24, color: '#000', marginTop: 10, marginLeft: '5%', alignSelf: 'flex-start', fontWeight: 'bold' }}>
                     Groups
                 </Text>
-                <View style={{ width: WIDTH}}>
+                <View style={{ width: WIDTH }}>
                     <ScrollView style={{ marginTop: 10 }}
-                    onScroll = {({nativeEvent, grp}) => onchange(nativeEvent, 'grp')}
-                    showsHorizontalScrollIndicator = {false}
-                    pagingEnabled
-                    horizontal
+                        onScroll={({ nativeEvent, grp }) => onchange(nativeEvent, 'grp')}
+                        showsHorizontalScrollIndicator={false}
+                        pagingEnabled
+                        horizontal
                     >
-                   { groups.map((e, index) => groups[index]) }
-                   </ScrollView>
+                        {groups.map((e, index) => groups[index])}
+                    </ScrollView>
                 </View>
-                
-                <Text style={{flexDirection:'row', bottom: 0, alignSelf:'center'}}>  { groups.map((e, index) => 
+
+                <Text style={{ flexDirection: 'row', bottom: 0, alignSelf: 'center' }}>  {groups.map((e, index) =>
                     <Text key={index}
-                        style={grpimgActive == index ? {margin: 3, color: 'black'} : {margin: 3, color: 'white'}}>
-                         ●
-                    </Text>) }
+                        style={grpimgActive == index ? { margin: 3, color: '#3107cb' } : { margin: 3, color: 'white' }}>
+                        {"  "}●{"  "}
+                    </Text>)}
                 </Text>
-               
 
                 <Text style={{ fontSize: 24, color: '#000', marginTop: 10, marginLeft: '5%', alignSelf: 'flex-start', fontWeight: 'bold' }}>
                     Events
                 </Text>
-                <View style={{ width: WIDTH}}>
+                <View style={{ width: WIDTH }}>
                     <ScrollView style={{ marginTop: 10 }}
-                    onScroll = {({nativeEvent, evt}) => onchange(nativeEvent, 'evt')}
-                    showsHorizontalScrollIndicator = {false}
-                    pagingEnabled
-                    horizontal
+                        onScroll={({ nativeEvent, evt }) => onchange(nativeEvent, 'evt')}
+                        showsHorizontalScrollIndicator={false}
+                        pagingEnabled
+                        horizontal
                     >
-                   { events.map((e, index) => events[index]) }
-                   </ScrollView>
+                        {events.map((e, index) => events[index])}
+                    </ScrollView>
                 </View>
-                
-                <Text style={{flexDirection:'row', bottom: 0, alignSelf:'center'}}>  { events.map((e, index) => 
+
+                <Text style={{ flexDirection: 'row', bottom: 0, alignSelf: 'center' }}>  {events.map((e, index) =>
                     <Text key={index}
-                        style={evtimgActive == index ? {margin: 3,  color: 'black'} : {margin: 3, color: 'white'}}>
-                         ●
-                    </Text>) }
+                        style={evtimgActive == index ? { margin: 3, color: '#3107cb' } : { margin: 3, color: 'white' }}>
+                        {"  "}●{"  "}
+                    </Text>)}
                 </Text>
             </View>
         </ScrollView>

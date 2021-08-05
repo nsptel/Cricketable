@@ -51,9 +51,9 @@ export default EventsScreen = ({ route, navigation }) => {
             <Card key={el.id} style={{ width: '90%' }}>
                 <CardImage
                     source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/event_pics%2F${(el.data().image === 'id' ? 'sample.png' : el.id)}?alt=media&token=${(el.data().image === 'id' ? '84f8905a-bde0-4cd6-bd80-760dcd3fc0f0' : el.id)}` }}
-                    title={el.data().name}
                 />
                 <CardTitle
+                    title={el.data().name}
                     subtitle={el.data().event_date.toDate().toString()}
                 />
                 <CardContent text={el.data().description} />
