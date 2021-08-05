@@ -1,15 +1,50 @@
 import * as React from 'react';
-import { ScrollView, View, TextInput } from 'react-native';
+import { ScrollView, View, Pressable, Text, TextInput } from 'react-native';
 import HeaderComponent from './header';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { Card, CardTitle, CardContent, CardImage, CardAction, CardButton } from 'react-native-material-cards';
+import firebase from 'firebase';
 
 const { styles } = require('../style');
 const db = require('../../db_conn');
 
 export default EventsScreen = ({ route, navigation }) => {
-    const [categories, setCategories] = React.useState([]);
+    const [categories, setCategories] = React.useState(null);
     const [search, setSearch] = React.useState('');
     const [resetEvents, setResetEvents] = React.useState(true);
+    const [date, setDate] = React.useState(new Date());
+    const [show, setShow] = React.useState(false);
+    const [dateText, setDateText] = React.useState('Filter by Date');
+    const [open, setOpen] = React.useState(false);
+    const [value, setValue] = React.useState(null);
+    const [items, setItems] = React.useState([
+        { label: 'All Cities', value: 'All Cities' },
+        { label: 'Thunder Bay, Ontario, CA', value: 'Thunder Bay, Ontario, CA' },
+        { label: 'Toronto, Ontario, CA', value: 'Toronto, Ontario, CA' },
+    ]);
+
+    const onDateTimeChange = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+        setDate(currentDate);
+        setShow(Platform.OS === 'ios' ? true : false);
+        setDateText(`${months[currentDate.getUTCMonth()]} ${currentDate.getUTCDate()}, ${currentDate.getUTCFullYear()}`);
+        let tempEvents = [];
+        db.collection('event')
+            .where('event_date', '>', firebase.firestore.Timestamp.fromDate(currentDate))
+            .where('event_date', '<', firebase.firestore.Timestamp.fromDate(new Date(currentDate.getTime() + 24 * 60 * 60 * 1000)))
+            .get()
+            .then((snap) => {
+                tempEvents = snap.docs.map(el => getCard(el));
+                setCategories((tempEvents.length === 0) ? <Text>We could not find any events.</Text> : tempEvents);
+            });
+    };
+
+    const showDatepicker = () => {
+        setShow(true);
+    };
 
     const getCard = (el) => {
         return (
@@ -38,10 +73,10 @@ export default EventsScreen = ({ route, navigation }) => {
 
     React.useEffect(() => {
         const getAsyncData = async () => {
-            let tempCat = [];
+            let tempEvents = [];
             db.collection('event').get().then(snap => {
-                tempCat = snap.docs.map(el => getCard(el));
-                setCategories(tempCat);
+                tempEvents = snap.docs.map(el => getCard(el));
+                setCategories((tempEvents.length === 0) ? <Text>We could not find any events.</Text> : tempEvents);
             });
         }
         getAsyncData();
@@ -60,7 +95,22 @@ export default EventsScreen = ({ route, navigation }) => {
             .get()
             .then((snap) => {
                 tempEvents = snap.docs.map(el => getCard(el));
-                setCategories(tempEvents);
+                setCategories((tempEvents.length === 0) ? <Text>We could not find any events.</Text> : tempEvents);
+            });
+    }
+
+    const filterCities = (val) => {
+        if (val == 'All Cities') {
+            setResetEvents(!resetEvents);
+            return;
+        }
+        let tempEvents = [];
+        db.collection('event')
+            .where('address', '==', val)
+            .get()
+            .then((snap) => {
+                tempEvents = snap.docs.map(el => getCard(el));
+                setCategories((tempEvents.length === 0) ? <Text>We could not find any events.</Text> : tempEvents);
             });
     }
 
@@ -77,6 +127,32 @@ export default EventsScreen = ({ route, navigation }) => {
                     onChangeText={val => setSearch(val.trim())}
                     onSubmitEditing={() => searchEvents()}
                 />
+                <DropDownPicker
+                    placeholder="Filter by City"
+                    open={open}
+                    value={value}
+                    items={items}
+                    setOpen={setOpen}
+                    setValue={setValue}
+                    setItems={setItems}
+                    style={{ marginBottom: 10 }}
+                    containerStyle={{ width: '90%', marginHorizontal: '5%' }}
+                    listMode='SCROLLVIEW'
+                    onChangeValue={(val) => filterCities(val)}
+                />
+                <Pressable style={styles.invertButton} onPress={showDatepicker}>
+                    <Text style={[styles.text, styles.normalText]}>{dateText}</Text>
+                </Pressable>
+                {show && <DateTimePicker
+                    testID="dateTimePicker"
+                    timeZoneOffsetInMinutes={0}
+                    value={date}
+                    mode="date"
+                    is24Hour={true}
+                    display="default"
+                    // minimumDate={new Date().setDate(new Date().getDate() + 1)}
+                    onChange={onDateTimeChange}
+                />}
                 <>
                     {categories}
                 </>
