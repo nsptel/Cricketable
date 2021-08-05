@@ -25,6 +25,8 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-41.0.0.tar.gz",
+    "react-native-cards-slider": "^0.1.2",
+    "react-native-dropdown-picker": "^5.1.23",
     "react-native-gesture-handler": "~1.10.2",
     "react-native-material-cards": "^1.0.15",
     "react-native-paper": "^4.9.2",
