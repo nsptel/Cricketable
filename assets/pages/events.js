@@ -3,11 +3,11 @@ import { ScrollView, View, Pressable, Text, TextInput } from 'react-native';
 import HeaderComponent from './header';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { Card, CardTitle, CardContent, CardImage, CardAction, CardButton } from 'react-native-material-cards';
 import firebase from 'firebase';
 
 const { styles } = require('../style');
 const db = require('../../db_conn');
+const { eventCard } = require('../helpers');
 
 export default EventsScreen = ({ route, navigation }) => {
     const [categories, setCategories] = React.useState(null);
@@ -37,7 +37,7 @@ export default EventsScreen = ({ route, navigation }) => {
             .where('event_date', '<', firebase.firestore.Timestamp.fromDate(new Date(currentDate.getTime() + 24 * 60 * 60 * 1000)))
             .get()
             .then((snap) => {
-                tempEvents = snap.docs.map(el => getCard(el));
+                tempEvents = snap.docs.map(el => eventCard(el, navigation));
                 setCategories((tempEvents.length === 0) ? <Text>We could not find any events.</Text> : tempEvents);
             });
     };
@@ -46,36 +46,11 @@ export default EventsScreen = ({ route, navigation }) => {
         setShow(true);
     };
 
-    const getCard = (el) => {
-        return (
-            <Card key={el.id} style={{ width: '90%' }}>
-                <CardImage
-                    source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/event_pics%2F${(el.data().image === 'id' ? 'sample.png' : el.id)}?alt=media&token=${(el.data().image === 'id' ? '84f8905a-bde0-4cd6-bd80-760dcd3fc0f0' : el.id)}` }}
-                />
-                <CardTitle
-                    title={el.data().name}
-                    subtitle={el.data().event_date.toDate().toString()}
-                />
-                <CardContent text={el.data().description} />
-                <CardAction
-                    separator={true}
-                    inColumn={false}>
-                    <CardButton
-                        onPress={() => { navigation.navigate("Event Description", { eventId: el.id }) }}
-                        style={{ width: '100%', backgroundColor: 'white' }}
-                        title="View Event"
-                        color="#3107cb"
-                    />
-                </CardAction>
-            </Card>
-        );
-    }
-
     React.useEffect(() => {
         const getAsyncData = async () => {
             let tempEvents = [];
             db.collection('event').get().then(snap => {
-                tempEvents = snap.docs.map(el => getCard(el));
+                tempEvents = snap.docs.map(el => eventCard(el, navigation));
                 setCategories((tempEvents.length === 0) ? <Text>We could not find any events.</Text> : tempEvents);
             });
         }
@@ -94,7 +69,7 @@ export default EventsScreen = ({ route, navigation }) => {
             .endAt(search.toLowerCase() + "\uf8ff")
             .get()
             .then((snap) => {
-                tempEvents = snap.docs.map(el => getCard(el));
+                tempEvents = snap.docs.map(el => eventCard(el, navigation));
                 setCategories((tempEvents.length === 0) ? <Text>We could not find any events.</Text> : tempEvents);
             });
     }
@@ -109,7 +84,7 @@ export default EventsScreen = ({ route, navigation }) => {
             .where('address', '==', val)
             .get()
             .then((snap) => {
-                tempEvents = snap.docs.map(el => getCard(el));
+                tempEvents = snap.docs.map(el => eventCard(el, navigation));
                 setCategories((tempEvents.length === 0) ? <Text>We could not find any events.</Text> : tempEvents);
             });
     }
