@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { Text, ScrollView, View, Image } from 'react-native';
+import { Text, ScrollView, View, Image, Button, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import HeaderComponent from './header';
-import CardSilder from 'react-native-cards-slider';
 import { Card, CardTitle, CardContent, CardImage, CardAction, CardButton }
     from 'react-native-material-cards';
 
@@ -11,21 +10,20 @@ const db = require('../../db_conn');
 
 export default HomeScreen = () => {
 
-    // return (
-    //     <ScrollView>
-    //         <View style={styles.container}>
-    //             <HeaderComponent />
-    //             <Text style={[styles.normalText, styles.text]}>This is the home page!</Text>
-    //         </View>
-    //     </ScrollView>
-    // );
     const [groups, setGroups] = React.useState([]);
     const [events, setEvents] = React.useState([]);
-    
+    const [grpimgActive, setgrpImgActive] = React.useState(0);
+    const [evtimgActive, setevtImgActive] = React.useState(0);
+
+    //determining height and width
+    const WIDTH = Dimensions.get('window').width;
+
     const navigation = useNavigation();
 
     React.useEffect(() => {
         const getAsyncData = async () => {
+
+            //Group Display Information
             let tempCat = [];
             db.collection('group').get().then(snap => {
                 tempCat = snap.docs.map(el => (
@@ -42,7 +40,7 @@ export default HomeScreen = () => {
                             separator={true}
                             inColumn={false}>
                             <CardButton
-                                onPress={() => { navigation.navigate("Groups", { screen: "Group Description", initial: false, params: {groupId: el.id} }) }}
+                                onPress={() => { navigation.navigate("Groups", { screen: "Group Description", initial: false, params: { groupId: el.id } }) }}
                                 style={{ width: '100%', backgroundColor: 'white' }}
                                 title="view group"
                                 color="purple"
@@ -53,6 +51,8 @@ export default HomeScreen = () => {
                 ));
                 setGroups(tempCat);
             });
+
+            //Events Display Information
             let tempCat2 = [];
             db.collection('event').get().then(snap => {
                 tempCat2 = snap.docs.map(el => (
@@ -69,7 +69,7 @@ export default HomeScreen = () => {
                             separator={true}
                             inColumn={false}>
                             <CardButton
-                                onPress={() => { navigation.navigate("Events", { screen: "Event Description", initial: false, params: {eventId: el.id} }) }}
+                                onPress={() => { navigation.navigate("Events", { screen: "Event Description", initial: false, params: { eventId: el.id } }) }}
                                 style={{ width: '100%', backgroundColor: 'white' }}
                                 title="View Event"
                                 color="#3107cb"
@@ -82,23 +82,70 @@ export default HomeScreen = () => {
         }
         getAsyncData();
     }, []);
+
+    onchange = (nativeEvent , replace) => {
+        const slide = Math.ceil(nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width);
+        if(nativeEvent){
+            if(replace == 'grp'){
+                if(slide != grpimgActive){
+                    setgrpImgActive(slide);
+                }
+            }
+            if(replace == 'evt'){
+                if(slide != evtimgActive){
+                    setevtImgActive(slide);
+                }
+            }
+        }
+    }
+
     return (
         <ScrollView>
             <View style={styles.container}>
                 <HeaderComponent />
-                    <Image source={require('../homePagePicture.jpeg')} style={{height: 200, width: '100%'}} alt='homePage Picture'></Image>
-                    <Text style={{ fontSize: 24, color: '#000', marginTop: 10, marginLeft: '5%', alignSelf: 'flex-start', fontWeight: 'bold' }}>
-                        Groups
-                    </Text>
-                    <CardSilder style={{ marginTop: 10 }}>
-                        {groups}
-                    </CardSilder>
-                    <Text style={{ fontSize: 24, color: '#000', marginTop: 10, marginLeft: '5%', alignSelf: 'flex-start', fontWeight: 'bold' }}>
-                        Events
-                    </Text>
-                    <CardSilder style={{ marginTop: 10 }}>
-                        {events}
-                    </CardSilder>
+                <Image source={require('../homePagePicture.jpeg')} style={{ height: 200, width: '100%', marginTop: -12 }} alt='homePage Picture'></Image>
+                <Text style={{ fontSize: 24, color: '#000', marginTop: 10, marginLeft: '5%', alignSelf: 'flex-start', fontWeight: 'bold' }}>
+                    Groups
+                </Text>
+                <View style={{ width: WIDTH}}>
+                    <ScrollView style={{ marginTop: 10 }}
+                    onScroll = {({nativeEvent, grp}) => onchange(nativeEvent, 'grp')}
+                    showsHorizontalScrollIndicator = {false}
+                    pagingEnabled
+                    horizontal
+                    >
+                   { groups.map((e, index) => groups[index]) }
+                   </ScrollView>
+                </View>
+                
+                <Text style={{flexDirection:'row', bottom: 0, alignSelf:'center'}}>  { groups.map((e, index) => 
+                    <Text key={index}
+                        style={grpimgActive == index ? {margin: 3, color: 'black'} : {margin: 3, color: 'white'}}>
+                         ●
+                    </Text>) }
+                </Text>
+               
+
+                <Text style={{ fontSize: 24, color: '#000', marginTop: 10, marginLeft: '5%', alignSelf: 'flex-start', fontWeight: 'bold' }}>
+                    Events
+                </Text>
+                <View style={{ width: WIDTH}}>
+                    <ScrollView style={{ marginTop: 10 }}
+                    onScroll = {({nativeEvent, evt}) => onchange(nativeEvent, 'evt')}
+                    showsHorizontalScrollIndicator = {false}
+                    pagingEnabled
+                    horizontal
+                    >
+                   { events.map((e, index) => events[index]) }
+                   </ScrollView>
+                </View>
+                
+                <Text style={{flexDirection:'row', bottom: 0, alignSelf:'center'}}>  { events.map((e, index) => 
+                    <Text key={index}
+                        style={evtimgActive == index ? {margin: 3,  color: 'black'} : {margin: 3, color: 'white'}}>
+                         ●
+                    </Text>) }
+                </Text>
             </View>
         </ScrollView>
 
