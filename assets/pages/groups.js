@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import { ScrollView, TextInput, View } from 'react-native';
 import HeaderComponent from './header';

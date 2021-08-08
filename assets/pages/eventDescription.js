@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Text, Pressable, ScrollView, View, Image } from 'react-native';
 import AuthContext from '../../context';
+import firebase from 'firebase';
 
 const { styles, profileStyles } = require('../style');
 const db = require('../../db_conn');
@@ -9,6 +10,7 @@ export default EventDescriptionScreen = ({ route, navigation }) => {
     const eventId = route.params.eventId;
     const { state, dispatch } = React.useContext(AuthContext);
     const [participation, setParticipation] = React.useState('');
+    const [attendees, setAttendees] = React.useState([]);
     const [eventInfo, setEventInfo] = React.useState({
         name: '',
         address: '',
@@ -20,6 +22,7 @@ export default EventDescriptionScreen = ({ route, navigation }) => {
     });
 
     React.useEffect(() => {
+        setAttendees([]);
         db.collection('event')
             .doc(eventId)
             .get()
@@ -36,6 +39,7 @@ export default EventDescriptionScreen = ({ route, navigation }) => {
                 });
             });
 
+        // checking if the user is attending the event
         db.collection('attendees')
             .where('userId', '==', state.userToken)
             .where('eventId', '==', eventId)
@@ -43,6 +47,34 @@ export default EventDescriptionScreen = ({ route, navigation }) => {
             .then((snap) => {
                 if (snap.docs.length > 0) {
                     setParticipation(snap.docs[0].id);
+                }
+            });
+
+        // getting attendees
+        db.collection('attendees')
+            .where('eventId', '==', eventId)
+            .get()
+            .then((snap) => {
+                if (snap.docs.length > 0) {
+                    const userIds = snap.docs.map(el => el.data().userId);
+                    db.collection('user')
+                        .where(firebase.firestore.FieldPath.documentId(), 'in', userIds)
+                        .get()
+                        .then((userData) => {
+                            let members = [];
+                            for (var i in userData.docs) {
+                                const el = userData.docs[i];
+                                members.push(
+                                    <View key={el.id} style={styles.flatListItem}>
+                                        <Text style={styles.flatListText}>{el.data().first_name + ' ' + el.data().last_name}</Text>
+                                        <Text style={[styles.flatListText, styles.smallText]}>{el.data().email}</Text>
+                                    </View>
+                                );
+                            }
+                            setAttendees(members);
+                        });
+                } else {
+                    setAttendees([]);
                 }
             });
     }, []);
@@ -89,6 +121,15 @@ export default EventDescriptionScreen = ({ route, navigation }) => {
                 <Text style={{ fontSize: 24 }}>{eventInfo.name}</Text>
                 <Text style={styles.subtitle}>{eventInfo.description}</Text>
                 <Text style={styles.subtitle}>This event is organized at {eventInfo.address} on {eventInfo.event_date && getFormattedDate(eventInfo.event_date.toDate())}.</Text>
+                <Text style={styles.flatListHeader}>Event Attendees</Text>
+                {attendees.length > 0 ? (
+                    <>
+                        {attendees}
+                    </>
+                ) : (
+                    <Text style={styles.flatListItem}>This event does not have any attendees yet.</Text>
+                )}
+                <Text></Text>
                 <Pressable
                     style={styles.invertButton}
                     onPress={() => {

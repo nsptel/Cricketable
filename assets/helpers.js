@@ -12,7 +12,7 @@ const formatTime = (d) => {
 // group card
 const groupCard = (el, navigation) => {
     return (
-        <View key={el.id} style={{ maxWidth: '90%', height: '30%' }}>
+        <View key={el.id} style={{ maxWidth: '90%', flexShrink: 1 }}>
             <Card>
                 <CardImage
                     source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/group_pics%2F${(el.data().image == 'id' ? 'sample.png' : el.id)}?alt=media&token=${(el.data().image == 'id' ? 'f689636c-d0cf-4471-882b-f717cea5bd53' : el.id)}` }}
@@ -41,7 +41,7 @@ const groupCard = (el, navigation) => {
 // event card
 const eventCard = (el, navigation) => {
     return (
-        <View key={el.id} style={{ maxWidth: '90%', height: '30%' }}>
+        <View key={el.id} style={{ maxWidth: '90%', flexShrink: 1 }}>
             <Card>
                 <CardImage
                     source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/event_pics%2F${(el.data().image === 'id' ? 'sample.png' : el.id)}?alt=media&token=${(el.data().image === 'id' ? '84f8905a-bde0-4cd6-bd80-760dcd3fc0f0' : el.id)}` }}

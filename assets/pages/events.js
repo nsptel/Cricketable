@@ -37,7 +37,7 @@ export default EventsScreen = ({ route, navigation }) => {
             .where('event_date', '<', firebase.firestore.Timestamp.fromDate(new Date(currentDate.getTime() + 24 * 60 * 60 * 1000)))
             .get()
             .then((snap) => {
-                tempEvents = snap.docs.map(el => eventCard(el, navigation));
+                tempEvents = snap.docs.map(el => (el.data().public) ? eventCard(el, navigation) : null);
                 setCategories((tempEvents.length === 0) ? <Text>We could not find any events.</Text> : tempEvents);
             });
     };
@@ -49,7 +49,7 @@ export default EventsScreen = ({ route, navigation }) => {
     React.useEffect(() => {
         const getAsyncData = async () => {
             let tempEvents = [];
-            db.collection('event').get().then(snap => {
+            db.collection('event').where('public', '==', true).get().then(snap => {
                 tempEvents = snap.docs.map(el => eventCard(el, navigation));
                 setCategories((tempEvents.length === 0) ? <Text>We could not find any events.</Text> : tempEvents);
             });
@@ -64,6 +64,7 @@ export default EventsScreen = ({ route, navigation }) => {
         }
         let tempEvents = [];
         db.collection('event')
+            .where('public', '==', true)
             .orderBy('name_lc')
             .startAt(search.toLowerCase())
             .endAt(search.toLowerCase() + "\uf8ff")
@@ -82,6 +83,7 @@ export default EventsScreen = ({ route, navigation }) => {
         let tempEvents = [];
         db.collection('event')
             .where('address', '==', val)
+            .where('public', '==', true)
             .get()
             .then((snap) => {
                 tempEvents = snap.docs.map(el => eventCard(el, navigation));
@@ -110,8 +112,8 @@ export default EventsScreen = ({ route, navigation }) => {
                     setOpen={setOpen}
                     setValue={setValue}
                     setItems={setItems}
-                    style={{ marginBottom: 10 }}
-                    containerStyle={{ width: '90%', marginHorizontal: '5%' }}
+                    style={[{ marginBottom: 10, marginHorizontal: '5%' }, styles.invertButton]}
+                    dropDownContainerStyle={{ width: '90%', marginHorizontal: '5%', borderRadius: 3 }}
                     listMode='SCROLLVIEW'
                     onChangeValue={(val) => filterCities(val)}
                 />
@@ -125,9 +127,11 @@ export default EventsScreen = ({ route, navigation }) => {
                     mode="date"
                     is24Hour={true}
                     display="default"
-                    // minimumDate={new Date().setDate(new Date().getDate() + 1)}
                     onChange={onDateTimeChange}
                 />}
+                <Pressable style={styles.invertButton} onPress={() => navigation.navigate("Private Events")}>
+                    <Text style={[styles.text, styles.normalText]}>View Private Events</Text>
+                </Pressable>
                 <>
                     {categories}
                 </>
