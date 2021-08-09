@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { Text, ScrollView, Image, TouchableOpacity, Pressable, View } from 'react-native';
+import { Avatar, ListItem } from 'react-native-elements';
 import AuthContext from '../../context';
 import firebase from 'firebase';
 
 const { styles, profileStyles } = require('../style');
 const db = require('../../db_conn');
+const { listProfile } = require('../helpers');
 
 export default GroupDescriptionScreen = ({ route, navigation }) => {
     const { state, dispatch } = React.useContext(AuthContext);
@@ -66,16 +68,22 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
                         .get()
                         .then((userData) => {
                             let members = [];
-                            for (var i in userData.docs) {
-                                const el = userData.docs[i];
-                                members.push(
-                                    <View key={el.id} style={styles.flatListItem}>
-                                        <Text style={styles.flatListText}>{el.data().first_name + ' ' + el.data().last_name + (groupInfo.user && (el.id == groupInfo.user.id) ? ' (Admin)' : '')}</Text>
-                                        <Text style={[styles.flatListText, styles.smallText]}>{el.data().email}</Text>
-                                    </View>
-                                );
-                            }
-                            setGroupMembers(members);
+                            Promise.all(userData.docs.map(el => firebase.storage().ref(el.data().profile_pic).getDownloadURL()))
+                                .then(images => {
+                                    for (var i in userData.docs) {
+                                        const el = userData.docs[i];
+                                        members.push(
+                                            <ListItem style={{ width: '90%', marginHorizontal: '5%' }} key={el.id} bottomDivider>
+                                                <Avatar source={{ uri: images[i] }} />
+                                                <View key={el.id} style={styles.flatListItem}>
+                                                    <Text style={styles.flatListText}>{el.data().first_name + ' ' + el.data().last_name + ((groupInfo.user && el.id === groupInfo.user.id) ? ' (Admin)' : '')}</Text>
+                                                    <Text style={[styles.flatListText, styles.smallText]}>{el.data().email}</Text>
+                                                </View>
+                                            </ListItem>
+                                        );
+                                    }
+                                    setGroupMembers(members);
+                                });
                         });
                 } else {
                     setGroupMembers([]);

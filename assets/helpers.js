@@ -1,6 +1,9 @@
 import React from 'react';
-import { Dimensions, View } from 'react-native';
+import { View, Text } from 'react-native';
+import { Avatar, ListItem } from 'react-native-elements';
 import { Card, CardTitle, CardContent, CardImage, CardAction, CardButton } from 'react-native-material-cards';
+
+const styles = require('./style');
 
 // formatted time
 const formatTime = (d) => {
@@ -66,8 +69,21 @@ const eventCard = (el, navigation) => {
     );
 }
 
+const listProfile = (el, image) => {
+    return (
+        <ListItem style={{ width: '90%', marginHorizontal: '5%' }} key={el.id} bottomDivider>
+            <Avatar source={{ uri: image }} style={{ width: 40, height: 40 }} rounded={true} />
+            <View key={el.id} style={styles.flatListItem}>
+                <Text style={styles.flatListText}>{el.data().first_name + ' ' + el.data().last_name}</Text>
+                <Text style={[styles.flatListText, styles.smallText]}>{el.data().email}</Text>
+            </View>
+        </ListItem>
+    )
+}
+
 module.exports = {
     "formatTime": formatTime,
     "groupCard": groupCard,
-    "eventCard": eventCard
+    "eventCard": eventCard,
+    "listProfile": listProfile
 }

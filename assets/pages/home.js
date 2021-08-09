@@ -28,7 +28,7 @@ export default HomeScreen = ({ route, navigation }) => {
                         <Pressable
                             style={{ alignSelf: 'center' }}
                             onPress={() => navigation.navigate("Groups")}>
-                            <Text style={{ fontSize: 24, color: '#3107cb' }}>VIEW ALL >></Text>
+                            <Text style={{ fontSize: 24, color: '#3107cb' }}>View All >></Text>
                         </Pressable>
                     </View>
                 )
@@ -44,7 +44,7 @@ export default HomeScreen = ({ route, navigation }) => {
                         <Pressable
                             style={{ alignSelf: 'center' }}
                             onPress={() => navigation.navigate("Events")}>
-                            <Text style={{ fontSize: 24, color: '#3107cb' }}>VIEW ALL >></Text>
+                            <Text style={{ fontSize: 24, color: '#3107cb' }}>View All >></Text>
                         </Pressable>
                     </View>
                 )

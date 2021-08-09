@@ -5,12 +5,14 @@ import firebase from 'firebase';
 
 const { styles, profileStyles } = require('../style');
 const db = require('../../db_conn');
+const { listProfile } = require('../helpers');
 
 export default EventDescriptionScreen = ({ route, navigation }) => {
     const eventId = route.params.eventId;
     const { state, dispatch } = React.useContext(AuthContext);
     const [participation, setParticipation] = React.useState('');
     const [attendees, setAttendees] = React.useState([]);
+    const [profileImages, setProfileImages] = React.useState(null);
     const [eventInfo, setEventInfo] = React.useState({
         name: '',
         address: '',
@@ -60,18 +62,17 @@ export default EventDescriptionScreen = ({ route, navigation }) => {
                     db.collection('user')
                         .where(firebase.firestore.FieldPath.documentId(), 'in', userIds)
                         .get()
-                        .then((userData) => {
+                        .then(async (userData) => {
                             let members = [];
-                            for (var i in userData.docs) {
-                                const el = userData.docs[i];
-                                members.push(
-                                    <View key={el.id} style={styles.flatListItem}>
-                                        <Text style={styles.flatListText}>{el.data().first_name + ' ' + el.data().last_name}</Text>
-                                        <Text style={[styles.flatListText, styles.smallText]}>{el.data().email}</Text>
-                                    </View>
-                                );
-                            }
-                            setAttendees(members);
+                            Promise.all(userData.docs.map(el => firebase.storage().ref(el.data().profile_pic).getDownloadURL()))
+                                .then(images => {
+                                    setProfileImages(images);
+                                    for (var i in userData.docs) {
+                                        const el = userData.docs[i];
+                                        members.push(listProfile(el, images[i]));
+                                    }
+                                    setAttendees(members);
+                                });
                         });
                 } else {
                     setAttendees([]);
@@ -122,7 +123,7 @@ export default EventDescriptionScreen = ({ route, navigation }) => {
                 <Text style={styles.subtitle}>{eventInfo.description}</Text>
                 <Text style={styles.subtitle}>This event is organized at {eventInfo.address} on {eventInfo.event_date && getFormattedDate(eventInfo.event_date.toDate())}.</Text>
                 <Text style={styles.flatListHeader}>Event Attendees</Text>
-                {attendees.length > 0 ? (
+                {profileImages && attendees.length > 0 ? (
                     <>
                         {attendees}
                     </>
