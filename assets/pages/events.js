@@ -104,22 +104,32 @@ export default EventsScreen = ({ route, navigation }) => {
                     onChangeText={val => setSearch(val.trim())}
                     onSubmitEditing={() => searchEvents()}
                 />
-                <DropDownPicker
-                    placeholder="Filter by City"
-                    open={open}
-                    value={value}
-                    items={items}
-                    setOpen={setOpen}
-                    setValue={setValue}
-                    setItems={setItems}
-                    style={[{ marginBottom: 10, marginHorizontal: '5%' }, styles.invertButton]}
-                    dropDownContainerStyle={{ width: '90%', marginHorizontal: '5%', borderRadius: 3 }}
-                    listMode='SCROLLVIEW'
-                    onChangeValue={(val) => filterCities(val)}
-                />
-                <Pressable style={styles.invertButton} onPress={showDatepicker}>
-                    <Text style={[styles.text, styles.normalText]}>{dateText}</Text>
-                </Pressable>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '86%', marginHorizontal: '7%' }}>
+                    <DropDownPicker
+                        placeholder="Filter by City"
+                        open={open}
+                        value={value}
+                        items={items}
+                        setOpen={setOpen}
+                        setValue={setValue}
+                        setItems={setItems}
+                        style={[{ marginBottom: 10 }, styles.invertButton, { width: '94%' }]}
+                        dropDownContainerStyle={{ width: '100%', borderRadius: 3 }}
+                        listMode='SCROLLVIEW'
+                        onChangeValue={(val) => filterCities(val)}
+                    />
+                    <Pressable onPress={() => setResetEvents(!resetEvents)} style={{ alignSelf: 'center' }}>
+                        <Text style={styles.link}>clear</Text>
+                    </Pressable>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '90%', marginHorizontal: '5%' }}>
+                    <Pressable style={styles.invertButton} onPress={showDatepicker}>
+                        <Text style={[styles.text, styles.normalText]}>{dateText}</Text>
+                    </Pressable>
+                    <Pressable onPress={() => setResetEvents(!resetEvents)} style={{ alignSelf: 'center' }}>
+                        <Text style={styles.link}>clear</Text>
+                    </Pressable>
+                </View>
                 {show && <DateTimePicker
                     testID="dateTimePicker"
                     timeZoneOffsetInMinutes={0}

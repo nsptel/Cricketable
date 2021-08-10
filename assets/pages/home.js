@@ -10,8 +10,8 @@ export default HomeScreen = ({ route, navigation }) => {
 
     const [groups, setGroups] = React.useState([]);
     const [events, setEvents] = React.useState([]);
-    const [grpimgActive, setgrpImgActive] = React.useState(0);
-    const [evtimgActive, setevtImgActive] = React.useState(0);
+    const [grpImgActive, setGrpImgActive] = React.useState(0);
+    const [evtImgActive, setEvtImgActive] = React.useState(0);
 
     //determining height and width
     const WIDTH = Dimensions.get('window').width;
@@ -58,13 +58,13 @@ export default HomeScreen = ({ route, navigation }) => {
         const slide = Math.ceil(nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width);
         if (nativeEvent) {
             if (replace == 'grp') {
-                if (slide != grpimgActive) {
-                    setgrpImgActive(slide);
+                if (slide != grpImgActive) {
+                    setGrpImgActive(slide);
                 }
             }
             if (replace == 'evt') {
-                if (slide != evtimgActive) {
-                    setevtImgActive(slide);
+                if (slide != evtImgActive) {
+                    setEvtImgActive(slide);
                 }
             }
         }
@@ -92,7 +92,7 @@ export default HomeScreen = ({ route, navigation }) => {
                 <Text></Text>
                 <Text style={{ flexDirection: 'row', bottom: 0, alignSelf: 'center' }}>  {groups.map((e, index) =>
                     <Text key={index}
-                        style={grpimgActive == index ? { margin: 3, color: '#3107cb' } : { margin: 3, color: 'white' }}>
+                        style={grpImgActive == index ? { margin: 3, color: '#3107cb' } : { margin: 3, color: 'white' }}>
                         {"  "}●{"  "}
                     </Text>)}
                 </Text>
@@ -115,7 +115,7 @@ export default HomeScreen = ({ route, navigation }) => {
 
                 <Text style={{ flexDirection: 'row', bottom: 0, alignSelf: 'center' }}>  {events.map((e, index) =>
                     <Text key={index}
-                        style={evtimgActive == index ? { margin: 3, color: '#3107cb' } : { margin: 3, color: 'white' }}>
+                        style={evtImgActive == index ? { margin: 3, color: '#3107cb' } : { margin: 3, color: 'white' }}>
                         {"  "}●{"  "}
                     </Text>)}
                 </Text>

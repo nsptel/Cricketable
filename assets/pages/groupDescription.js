@@ -6,7 +6,6 @@ import firebase from 'firebase';
 
 const { styles, profileStyles } = require('../style');
 const db = require('../../db_conn');
-const { listProfile } = require('../helpers');
 
 export default GroupDescriptionScreen = ({ route, navigation }) => {
     const { state, dispatch } = React.useContext(AuthContext);
