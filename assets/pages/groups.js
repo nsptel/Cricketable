@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { ScrollView, TouchableOpacity, Text, TextInput, View } from 'react-native';
 import HeaderComponent from './header';
+import { useIsFocused } from '@react-navigation/native';
 
 const { styles } = require('../style');
 const db = require('../../db_conn');
@@ -10,6 +11,7 @@ export default GroupsScreen = ({ route, navigation }) => {
     const [categories, setCategories] = React.useState([]);
     const [search, setSearch] = React.useState('');
     const [resetGroups, setResetGroups] = React.useState(true);
+    const isFocused = useIsFocused();
 
     React.useEffect(() => {
         const getAsyncData = async () => {
@@ -20,7 +22,7 @@ export default GroupsScreen = ({ route, navigation }) => {
             });
         }
         getAsyncData();
-    }, [resetGroups]);
+    }, [resetGroups, isFocused]);
 
     const searchGroups = async () => {
         if (search.trim() === "") {

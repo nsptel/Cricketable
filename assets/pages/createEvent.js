@@ -20,7 +20,7 @@ export default CreateEventScreen = ({ route, navigation }) => {
     const [timeText, setTimeText] = React.useState('Time');
     const [address, setAddress] = React.useState('');
     const [errors, setErrors] = React.useState([]);
-    const [eventPhoto, setEventPhoto] = React.useState(null);
+    const [eventPhoto, setEventPhoto] = React.useState('/event_pics/sample.png');
 
     // date and time methods
     const onDateTimeChange = (event, selectedDate) => {
@@ -165,7 +165,7 @@ export default CreateEventScreen = ({ route, navigation }) => {
                     checked={privateEvent}
                     onPress={() => setPrivateEvent(!privateEvent)}
                 />
-                {eventPhoto && (
+                {eventPhoto !== '/event_pics/sample.png' && (
                     <Image
                         source={{ uri: eventPhoto }}
                         style={{ width: 160, height: 160, borderRadius: 160, marginVertical: 12 }}

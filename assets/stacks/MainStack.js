@@ -18,9 +18,9 @@ const MainStack = () => {
   const { state, dispatch } = React.useContext(AuthContext);
 
   firebase.storage()
-      .ref(state.userData.profile_pic)
-      .getDownloadURL()
-      .then((url) => setProfilePicURL(url));
+    .ref(state.userData.profile_pic)
+    .getDownloadURL()
+    .then((url) => setProfilePicURL(url));
 
   return (
     <Tab.Navigator

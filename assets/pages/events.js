@@ -4,6 +4,7 @@ import HeaderComponent from './header';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from 'react-native-dropdown-picker';
 import firebase from 'firebase';
+import { useIsFocused } from '@react-navigation/native';
 
 const { styles } = require('../style');
 const db = require('../../db_conn');
@@ -25,6 +26,7 @@ export default EventsScreen = ({ route, navigation }) => {
         { label: 'Toronto, Ontario, CA', value: 'Toronto, Ontario, CA' },
         { label: 'Montreal, Quebec, CA', value: 'Montreal, Quebec, CA' },
     ]);
+    const isFocused = useIsFocused();
 
     const onDateTimeChange = (event, selectedDate) => {
         const currentDate = selectedDate || date;
@@ -57,7 +59,7 @@ export default EventsScreen = ({ route, navigation }) => {
             });
         }
         getAsyncData();
-    }, [resetEvents]);
+    }, [resetEvents, isFocused]);
 
     const searchEvents = async () => {
         if (search.trim() === "") {

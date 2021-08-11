@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../context';
 import { useNavigation } from '@react-navigation/native';
 import firebase from 'firebase';
+import { useIsFocused } from '@react-navigation/native';
 
 const { styles, profileStyles } = require('../style');
 
@@ -12,6 +13,8 @@ export default ProfileScreen = () => {
     const { state, dispatch } = React.useContext(AuthContext);
     const [profilePicURL, setProfilePicURL] = React.useState('');
     const navigation = useNavigation();
+    const isFocused = useIsFocused();
+
     const logout = async () => {
         await AsyncStorage.clear();
         dispatch({ type: 'SIGN_OUT', userToken: null, userData: null });
@@ -21,10 +24,15 @@ export default ProfileScreen = () => {
         dispatch({ type: 'SIGN_IN', userToken: state.userToken, userGuide: true });
     }
 
-    firebase.storage()
-        .ref(state.userData.profile_pic)
-        .getDownloadURL()
-        .then((url) => setProfilePicURL(url));
+    React.useEffect(() => {
+        const getAsyncData = async () => {
+            firebase.storage()
+                .ref(state.userData.profile_pic)
+                .getDownloadURL()
+                .then((url) => setProfilePicURL(url));
+        }
+        getAsyncData();
+    }, [profilePicURL, isFocused])
 
     return (
         <ScrollView>

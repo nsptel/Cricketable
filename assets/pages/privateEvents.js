@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { ScrollView, View, Text } from 'react-native';
 import AuthContext from '../../context';
+import { useIsFocused } from '@react-navigation/native';
 
 const { styles } = require('../style');
 const db = require('../../db_conn');
@@ -9,6 +10,7 @@ const { eventCard } = require('../helpers');
 export default PrivateEventsScreen = ({ route, navigation }) => {
     const [categories, setCategories] = React.useState(null);
     const { state, dispatch } = React.useContext(AuthContext);
+    const isFocused = useIsFocused();
 
     React.useEffect(() => {
         const getAsyncData = async () => {
@@ -20,7 +22,7 @@ export default PrivateEventsScreen = ({ route, navigation }) => {
                 .then(snap => {
                     const groupRefs = snap.docs.map(el => db.collection('group').doc(el.data().groupId));
                     db.collection('event')
-                        // .where('group', 'in', groupRefs)
+                        .where('group', 'in', groupRefs)
                         .where('public', '==', false)
                         .get()
                         .then(pvtEvents => {
@@ -30,7 +32,7 @@ export default PrivateEventsScreen = ({ route, navigation }) => {
                 });
         }
         getAsyncData();
-    }, []);
+    }, [isFocused]);
 
     return (
         <ScrollView>

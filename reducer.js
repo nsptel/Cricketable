@@ -20,5 +20,10 @@ export const authReducer = (prevState, action) => {
                 userToken: action.userToken,
                 userData: action.userData,
             };
+        case 'UPDATE_PROFILE':
+            return {
+                ...prevState,
+                userData: action.userData,
+            }
     }
 };

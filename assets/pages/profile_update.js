@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import firebase from 'firebase';
 import * as Location from 'expo-location';
 import Ionicons from '@expo/vector-icons/Ionicons';
-
+import { Alert } from 'react-native';
 
 const { styles } = require('../style');
 const db = require('../../db_conn');
@@ -17,7 +17,7 @@ export default ProfileUpdateScreen = () => {
     const [email, setEmail] = React.useState(state.userData.email);
     const [first_name, setFirstName] = React.useState(state.userData.first_name);
     const [last_name, setLastName] = React.useState(state.userData.last_name);
-    const [password, setPassword] = React.useState();
+    const [password, setPassword] = React.useState('');
     const [confirmPassword, setConfirmPassword] = React.useState('');
     const [city, setCity] = React.useState(state.userData.city);
     const [errors, setErrors] = React.useState([]);
@@ -121,12 +121,17 @@ export default ProfileUpdateScreen = () => {
                 userData = { ...userData, profile_pic: '/profile_pics/' + state.userToken };
                 await AsyncStorage.setItem('userData', JSON.stringify({ profile_pic: state.userToken }));
             }
+            dispatch({ type: 'UPDATE_PROFILE', userData: userData });
             await AsyncStorage.setItem('userData', JSON.stringify(userData));
             await db.collection('user')
                 .doc(state.userToken)
                 .update(userData)
                 .then(() => {
-                    navigation.navigate('Profile');
+                    Alert.alert("Profile Update", "The profile has been updated");
+                    setProfilePhoto(null);
+                    setPassword('');
+                    setConfirmPassword('');
+                    navigation.navigate('Update Profile');
                 });
         }
     }
