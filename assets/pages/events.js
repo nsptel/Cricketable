@@ -21,7 +21,9 @@ export default EventsScreen = ({ route, navigation }) => {
     const [items, setItems] = React.useState([
         { label: 'All Cities', value: 'All Cities' },
         { label: 'Thunder Bay, Ontario, CA', value: 'Thunder Bay, Ontario, CA' },
+        { label: 'Winnipeg, Manitobe, CA', value: 'Winnipeg, Manitobe, CA' },
         { label: 'Toronto, Ontario, CA', value: 'Toronto, Ontario, CA' },
+        { label: 'Montreal, Quebec, CA', value: 'Montreal, Quebec, CA' },
     ]);
 
     const onDateTimeChange = (event, selectedDate) => {
@@ -37,7 +39,7 @@ export default EventsScreen = ({ route, navigation }) => {
             .where('event_date', '<', firebase.firestore.Timestamp.fromDate(new Date(currentDate.getTime() + 24 * 60 * 60 * 1000)))
             .get()
             .then((snap) => {
-                tempEvents = snap.docs.map(el => (el.data().public) ? eventCard(el, navigation) : null);
+                tempEvents = snap.docs.map(el => (el.data().public) ? eventCard(el, navigation, { origin: "Events" }) : null);
                 setCategories((tempEvents.length === 0) ? <Text>We could not find any events.</Text> : tempEvents);
             });
     };
@@ -50,7 +52,7 @@ export default EventsScreen = ({ route, navigation }) => {
         const getAsyncData = async () => {
             let tempEvents = [];
             db.collection('event').where('public', '==', true).get().then(snap => {
-                tempEvents = snap.docs.map(el => eventCard(el, navigation));
+                tempEvents = snap.docs.map(el => eventCard(el, navigation, { origin: "Events" }));
                 setCategories((tempEvents.length === 0) ? <Text>We could not find any events.</Text> : tempEvents);
             });
         }
@@ -64,13 +66,12 @@ export default EventsScreen = ({ route, navigation }) => {
         }
         let tempEvents = [];
         db.collection('event')
-            .where('public', '==', true)
             .orderBy('name_lc')
             .startAt(search.toLowerCase())
             .endAt(search.toLowerCase() + "\uf8ff")
             .get()
             .then((snap) => {
-                tempEvents = snap.docs.map(el => eventCard(el, navigation));
+                tempEvents = snap.docs.map(el => eventCard(el, navigation, { origin: "Events" }));
                 setCategories((tempEvents.length === 0) ? <Text>We could not find any events.</Text> : tempEvents);
             });
     }
@@ -86,7 +87,7 @@ export default EventsScreen = ({ route, navigation }) => {
             .where('public', '==', true)
             .get()
             .then((snap) => {
-                tempEvents = snap.docs.map(el => eventCard(el, navigation));
+                tempEvents = snap.docs.map(el => eventCard(el, navigation, { origin: "Events" }));
                 setCategories((tempEvents.length === 0) ? <Text>We could not find any events.</Text> : tempEvents);
             });
     }
@@ -118,7 +119,10 @@ export default EventsScreen = ({ route, navigation }) => {
                         listMode='SCROLLVIEW'
                         onChangeValue={(val) => filterCities(val)}
                     />
-                    <Pressable onPress={() => setResetEvents(!resetEvents)} style={{ alignSelf: 'center' }}>
+                    <Pressable onPress={() => {
+                        setResetEvents(!resetEvents);
+                        setValue(null);
+                    }} style={{ alignSelf: 'center' }}>
                         <Text style={styles.link}>clear</Text>
                     </Pressable>
                 </View>
@@ -126,7 +130,10 @@ export default EventsScreen = ({ route, navigation }) => {
                     <Pressable style={styles.invertButton} onPress={showDatepicker}>
                         <Text style={[styles.text, styles.normalText]}>{dateText}</Text>
                     </Pressable>
-                    <Pressable onPress={() => setResetEvents(!resetEvents)} style={{ alignSelf: 'center' }}>
+                    <Pressable onPress={() => {
+                        setResetEvents(!resetEvents);
+                        setDateText("Filter by Date")
+                    }} style={{ alignSelf: 'center' }}>
                         <Text style={styles.link}>clear</Text>
                     </Pressable>
                 </View>

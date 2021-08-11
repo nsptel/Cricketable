@@ -2,6 +2,7 @@ import * as React from 'react';
 import { TextInput, Image, Text, Pressable, ScrollView, View } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
+import { CheckBox } from 'react-native-elements';
 import firebase from 'firebase';
 
 const { styles } = require('../style');
@@ -14,6 +15,7 @@ export default CreateEventScreen = ({ route, navigation }) => {
     const [date, setDate] = React.useState(new Date());
     const [mode, setMode] = React.useState('date');
     const [show, setShow] = React.useState(false);
+    const [privateEvent, setPrivateEvent] = React.useState(false);
     const [dateText, setDateText] = React.useState('Date');
     const [timeText, setTimeText] = React.useState('Time');
     const [address, setAddress] = React.useState('');
@@ -23,12 +25,12 @@ export default CreateEventScreen = ({ route, navigation }) => {
     // date and time methods
     const onDateTimeChange = (event, selectedDate) => {
         const currentDate = selectedDate || date;
-        const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         setDate(currentDate);
         setShow(Platform.OS === 'ios' ? true : false);
         setDateText(`${months[currentDate.getUTCMonth()]} ${currentDate.getUTCDate()}, ${currentDate.getUTCFullYear()}`);
-        setTimeText(currentDate.toLocaleTimeString());
+        //setTimeText(currentDate.toTimeString());
+        setTimeText(currentDate.toUTCString().split(" ")[4]);
     };
 
     const showMode = currentMode => {
@@ -89,6 +91,7 @@ export default CreateEventScreen = ({ route, navigation }) => {
                     image: eventPhoto === '/event_pics/sample.png' ? eventPhoto : 'id',
                     group: db.doc('group/' + route.params.groupId),
                     address: address,
+                    public: !privateEvent,
                     event_date: firebase.firestore.Timestamp.fromDate(date),
                     name_lc: eventName.toLowerCase()
                 }).then(async (doc) => {
@@ -156,6 +159,11 @@ export default CreateEventScreen = ({ route, navigation }) => {
                     autoCapitalize="none"
                     placeholderTextColor='#aaa'
                     onChangeText={val => setAddress(val.trim())}
+                />
+                <CheckBox
+                    title='Private'
+                    checked={privateEvent}
+                    onPress={() => setPrivateEvent(!privateEvent)}
                 />
                 {eventPhoto && (
                     <Image

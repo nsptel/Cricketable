@@ -20,11 +20,11 @@ export default PrivateEventsScreen = ({ route, navigation }) => {
                 .then(snap => {
                     const groupRefs = snap.docs.map(el => db.collection('group').doc(el.data().groupId));
                     db.collection('event')
-                        .where('group', 'in', groupRefs)
+                        // .where('group', 'in', groupRefs)
                         .where('public', '==', false)
                         .get()
                         .then(pvtEvents => {
-                            tempEvents = pvtEvents.docs.map(el => eventCard(el, navigation));
+                            tempEvents = pvtEvents.docs.map(el => eventCard(el, navigation, { origin: "Events" }));
                             setCategories((tempEvents.length === 0) ? <Text>We could not find any events.</Text> : tempEvents);
                         });
                 });

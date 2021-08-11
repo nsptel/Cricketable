@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ScrollView, TextInput, View } from 'react-native';
+import { ScrollView, TouchableOpacity, Text, TextInput, View } from 'react-native';
 import HeaderComponent from './header';
 
 const { styles } = require('../style');
@@ -15,7 +15,7 @@ export default GroupsScreen = ({ route, navigation }) => {
         const getAsyncData = async () => {
             let tempCat = [];
             db.collection('group').get().then(snap => {
-                tempCat = snap.docs.map(el => groupCard(el, navigation));
+                tempCat = snap.docs.map(el => groupCard(el, navigation, { origin: "Groups" }));
                 setCategories(tempCat);
             });
         }
@@ -34,7 +34,7 @@ export default GroupsScreen = ({ route, navigation }) => {
             .endAt(search.toLowerCase() + "\uf8ff")
             .get()
             .then((snap) => {
-                tempGroups = snap.docs.map(el => groupCard(el, navigation));
+                tempGroups = snap.docs.map(el => groupCard(el, navigation, { origin: "Groups" }));
                 setCategories(tempGroups);
             });
     }
@@ -52,6 +52,12 @@ export default GroupsScreen = ({ route, navigation }) => {
                     onChangeText={val => setSearch(val.trim())}
                     onSubmitEditing={() => searchGroups()}
                 />
+                <TouchableOpacity onPress={() => navigation.navigate("Create Group")}
+                    style={styles.guideButtons}>
+                    <Text style={[styles.invertText, styles.text]}>
+                        Create Group
+                    </Text>
+                </TouchableOpacity>
                 <>
                     {categories}
                 </>

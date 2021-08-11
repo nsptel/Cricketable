@@ -7,7 +7,6 @@ const db = require('../../db_conn');
 const { groupCard, eventCard } = require('../helpers');
 
 export default HomeScreen = ({ route, navigation }) => {
-
     const [groups, setGroups] = React.useState([]);
     const [events, setEvents] = React.useState([]);
     const [grpImgActive, setGrpImgActive] = React.useState(0);
@@ -21,8 +20,8 @@ export default HomeScreen = ({ route, navigation }) => {
 
             //Group Display Information
             let tempCat = [];
-            db.collection('group').get().then(snap => {
-                tempCat = snap.docs.map(el => groupCard(el, navigation));
+            db.collection('group').limit(3).get().then(snap => {
+                tempCat = snap.docs.map(el => groupCard(el, navigation, { origin: "Home" }));
                 tempCat.push(
                     <View key={tempCat.length} style={{ minWidth: WIDTH * 0.9, justifyContent: 'center' }}>
                         <Pressable
@@ -37,8 +36,8 @@ export default HomeScreen = ({ route, navigation }) => {
 
             //Events Display Information
             let tempCat2 = [];
-            db.collection('event').get().then(snap => {
-                tempCat2 = snap.docs.map(el => eventCard(el, navigation));
+            db.collection('event').limit(3).get().then(snap => {
+                tempCat2 = snap.docs.map(el => eventCard(el, navigation, { origin: "Home" }));
                 tempCat2.push(
                     <View key={tempCat2.length} style={{ minWidth: WIDTH * 0.9, justifyContent: 'center' }}>
                         <Pressable
