@@ -78,7 +78,7 @@ export default EventDescriptionScreen = ({ route, navigation }) => {
                     setAttendees([]);
                 }
             });
-    }, []);
+    }, [participation]);
 
     const participate = async () => {
         db.collection('attendees')
@@ -110,12 +110,12 @@ export default EventDescriptionScreen = ({ route, navigation }) => {
             <View style={styles.container}>
                 {(eventInfo.image === null || eventInfo.image === 'id') ? (
                     <Image
-                        source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/event_pics%2Fsample.png?alt=media&token=84f8905a-bde0-4cd6-bd80-760dcd3fc0f0' }}
-                        style={[profileStyles.avatar, profileStyles.bigAvatar]}
+                    source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/event_pics%2F${eventId}?alt=media&token=${eventId}` }}
+                    style={[profileStyles.avatar, profileStyles.bigAvatar]}
                     />
-                ) : (
-                    <Image
-                        source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/event_pics%2F${eventInfo.image.trim()}?alt=media&token=${eventInfo.image.trim()}` }}
+                    ) : (
+                        <Image
+                        source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/event_pics%2Fsample.png?alt=media&token=84f8905a-bde0-4cd6-bd80-760dcd3fc0f0' }}
                         style={[profileStyles.avatar, profileStyles.bigAvatar]}
                     />
                 )}

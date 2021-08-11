@@ -155,12 +155,12 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
             <View style={styles.container}>
                 {(groupInfo.image === null || groupInfo.image === 'id') ? (
                     <Image
-                        source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/group_pics%2Fsample.png?alt=media&token=f689636c-d0cf-4471-882b-f717cea5bd53' }}
+                        source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/group_pics%2F${groupId}?alt=media&token=${groupId}` }}
                         style={[profileStyles.avatar, profileStyles.bigAvatar]}
                     />
                 ) : (
                     <Image
-                        source={{ uri: `https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/group_pics%2F${groupInfo.image.trim()}?alt=media&token=${groupInfo.image.trim()}` }}
+                        source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/cricketable-c1bac.appspot.com/o/group_pics%2Fsample.png?alt=media&token=f689636c-d0cf-4471-882b-f717cea5bd53' }}
                         style={[profileStyles.avatar, profileStyles.bigAvatar]}
                     />
                 )}
@@ -186,6 +186,16 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
                     <Text style={styles.flatListItem}>This group does not have any events.</Text>
                 )}
                 <Text></Text>
+                {(groupId === '2C9Em7AvtIYobOnnwKCc') ? (
+                    <TouchableOpacity onPress={() => navigation.navigate("Join Requests")}
+                        style={styles.invertButton}>
+                        <Text style={[styles.text, styles.normalText]}>
+                            View Join Requests
+                        </Text>
+                    </TouchableOpacity>
+                ) : (
+                    null
+                )}
                 <TouchableOpacity onPress={() => navigation.navigate("Create Event", { groupId: route.params.groupId })}
                     style={styles.guideButtons}>
                     <Text style={[styles.invertText, styles.text]}>

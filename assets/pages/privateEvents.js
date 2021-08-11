@@ -10,7 +10,7 @@ const { eventCard } = require('../helpers');
 export default PrivateEventsScreen = ({ route, navigation }) => {
     const [categories, setCategories] = React.useState(null);
     const { state, dispatch } = React.useContext(AuthContext);
-    const isFocused = useIsFocused();
+    let isFocused = useIsFocused();
 
     React.useEffect(() => {
         const getAsyncData = async () => {
@@ -32,6 +32,7 @@ export default PrivateEventsScreen = ({ route, navigation }) => {
                 });
         }
         getAsyncData();
+        return () => { isFocused = false }
     }, [isFocused]);
 
     return (

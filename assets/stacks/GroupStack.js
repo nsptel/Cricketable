@@ -4,6 +4,7 @@ import GroupsScreen from '../pages/groups';
 import GroupDescriptionScreen from '../pages/groupDescription';
 import CreateGroupScreen from '../pages/createGroup';
 import CreateEventScreen from '../pages/createEvent';
+import groupJoinRequestsScreen from '../pages/groupJoinRequests';
 
 const Stack = createStackNavigator();
 
@@ -26,6 +27,10 @@ export default GroupStack = () => {
             <Stack.Screen
                 name="Create Event"
                 component={CreateEventScreen}
+            />
+            <Stack.Screen
+                name="Join Requests"
+                component={groupJoinRequestsScreen}
             />
         </Stack.Navigator>
     );

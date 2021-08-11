@@ -55,6 +55,10 @@ export default CreateGroupScreen = () => {
                             }
                         });
                     }
+                    await db.collection('members').add({
+                        userId: state.userToken,
+                        groupId: doc.id
+                    });
                     navigation.navigate("Groups");
                 });
         }

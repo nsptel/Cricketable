@@ -4,6 +4,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { CheckBox } from 'react-native-elements';
 import firebase from 'firebase';
+import { State } from 'react-native-gesture-handler';
+import AuthContext from '../../context';
 
 const { styles } = require('../style');
 const db = require('../../db_conn');
@@ -21,6 +23,7 @@ export default CreateEventScreen = ({ route, navigation }) => {
     const [address, setAddress] = React.useState('');
     const [errors, setErrors] = React.useState([]);
     const [eventPhoto, setEventPhoto] = React.useState('/event_pics/sample.png');
+    const { state, dispatch } = React.useContext(AuthContext);
 
     // date and time methods
     const onDateTimeChange = (event, selectedDate) => {
@@ -108,6 +111,10 @@ export default CreateEventScreen = ({ route, navigation }) => {
                             }
                         });
                     }
+                    await db.collection('attendees').add({
+                        userId: state.userToken,
+                        eventId: doc.id,
+                    });
                     navigation.navigate("Groups");
                 });
         }
