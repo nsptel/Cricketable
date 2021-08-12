@@ -30,112 +30,117 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
         setGroupMembers([]);
         setGroupEvents([]);
 
-        // getting group and user information
-        db.collection('group')
-            .doc(route.params.groupId)
-            .get()
-            .then((group) => {
-                const data = group.data();
-                setGroupInfo({
-                    description: data.description,
-                    image: data.image,
-                    name: data.name,
-                    timestamp: data.timestamp
+        const getAsyncData = async () => {
+
+            // getting group and user information
+            await db.collection('group')
+                .doc(route.params.groupId)
+                .get()
+                .then((group) => {
+                    const data = group.data();
+                    setGroupInfo({
+                        description: data.description,
+                        image: data.image,
+                        name: data.name,
+                        timestamp: data.timestamp
+                    });
+                    return data.user.get();
+                }).then((userInfo) => {
+                    setGroupInfo(prevState => ({
+                        ...prevState,
+                        user: { id: userInfo.id, ...userInfo.data() }
+                    }));
                 });
-                return data.user.get();
-            }).then((userInfo) => {
-                setGroupInfo(prevState => ({
-                    ...prevState,
-                    user: { id: userInfo.id, ...userInfo.data() }
-                }));
-            });
 
-        // checking if the user is a member of this group
-        db.collection('members')
-            .where('userId', '==', state.userToken)
-            .where('groupId', '==', groupId)
-            .get()
-            .then(async (snap) => {
-                if (snap.docs.length > 0) {
-                    setMember(snap.docs[0].id);
-                } else {
-                    db.collection('requests')
-                        .where('userId', '==', state.userToken)
-                        .where('groupId', '==', groupId)
-                        .get()
-                        .then(request => {
-                            if (request.docs.length > 0) {
-                                setMember('');
-                                setDisableJoin(true);
-                                setJoinText('Requested');
-                            }
-                        });
-                }
-            });
+            // checking if the user is a member of this group
+            db.collection('members')
+                .where('userId', '==', state.userToken)
+                .where('groupId', '==', groupId)
+                .get()
+                .then(async (snap) => {
+                    if (snap.docs.length > 0) {
+                        setMember(snap.docs[0].id);
+                    } else {
+                        db.collection('requests')
+                            .where('userId', '==', state.userToken)
+                            .where('groupId', '==', groupId)
+                            .get()
+                            .then(request => {
+                                if (request.docs.length > 0) {
+                                    setMember('');
+                                    setDisableJoin(true);
+                                    setJoinText('Requested');
+                                }
+                            });
+                    }
+                });
 
-        // getting all the members of the group
-        db.collection('members')
-            .where('groupId', '==', groupId)
-            .get()
-            .then((snap) => {
-                if (snap.docs.length > 0) {
-                    const userIds = snap.docs.map(el => el.data().userId);
-                    db.collection('user')
-                        .where(firebase.firestore.FieldPath.documentId(), 'in', userIds)
-                        .get()
-                        .then((userData) => {
-                            let members = [];
-                            Promise.all(userData.docs.map(el => firebase.storage().ref(el.data().profile_pic).getDownloadURL()))
-                                .then(images => {
-                                    for (var i in userData.docs) {
-                                        const el = userData.docs[i];
-                                        members.push(
-                                            <ListItem style={{ width: '90%', marginHorizontal: '5%' }} key={el.id} bottomDivider>
-                                                <Avatar source={{ uri: images[i] }} />
-                                                <View key={el.id} style={styles.flatListItem}>
-                                                    <Text style={styles.flatListText}>{el.data().first_name + ' ' + el.data().last_name + ((groupInfo.user && el.id === groupInfo.user.id) ? ' (Admin)' : '')}</Text>
-                                                    <Text style={[styles.flatListText, styles.smallText]}>{el.data().email}</Text>
-                                                </View>
-                                            </ListItem>
-                                        );
-                                    }
-                                    setGroupMembers(members);
-                                });
-                        });
-                } else {
-                    setGroupMembers([]);
-                }
-            });
+            // getting all the members of the group
+            db.collection('members')
+                .where('groupId', '==', groupId)
+                .get()
+                .then((snap) => {
+                    if (snap.docs.length > 0) {
+                        const userIds = snap.docs.map(el => el.data().userId);
+                        db.collection('user')
+                            .where(firebase.firestore.FieldPath.documentId(), 'in', userIds)
+                            .get()
+                            .then((userData) => {
+                                let members = [];
+                                Promise.all(userData.docs.map(el => firebase.storage().ref(el.data().profile_pic).getDownloadURL()))
+                                    .then(images => {
+                                        for (var i in userData.docs) {
+                                            const el = userData.docs[i];
+                                            members.push(
+                                                <ListItem style={{ width: '90%', marginHorizontal: '5%' }} key={el.id} bottomDivider>
+                                                    <Avatar source={{ uri: images[i] }} />
+                                                    <View key={el.id} style={styles.flatListItem}>
+                                                        <Text style={styles.flatListText}>{el.data().first_name + ' ' + el.data().last_name + ((groupInfo.user && el.id === groupInfo.user.id) ? ' (Admin)' : '')}</Text>
+                                                        <Text style={[styles.flatListText, styles.smallText]}>{el.data().email}</Text>
+                                                    </View>
+                                                </ListItem>
+                                            );
+                                        }
+                                        setGroupMembers(members);
+                                    });
+                            });
+                    } else {
+                        setGroupMembers([]);
+                    }
+                });
 
-        // getting all the members of the group
-        db.collection('event')
-            .where('group', '==', db.collection('group').doc(groupId))
-            .get()
-            .then((snap) => {
-                if (snap.docs.length > 0) {
-                    const eventIds = snap.docs.map(el => el.id);
-                    db.collection('event')
-                        .where(firebase.firestore.FieldPath.documentId(), 'in', eventIds)
-                        .get()
-                        .then((eventData) => {
-                            let events = [];
-                            for (var i in eventData.docs) {
-                                const el = eventData.docs[i];
-                                events.push(
-                                    <Pressable
-                                        style={styles.flatListItem}
-                                        onPress={() => navigation.navigate('Events', { screen: 'Event Description', initial: false, params: { eventId: el.id } })}
-                                        key={el.id}>
-                                        <Text style={[styles.flatListText, { color: '#3107cb' }]}>{el.data().name}</Text>
-                                    </Pressable>
-                                );
-                            }
-                            setGroupEvents(events);
-                        });
-                } else {
-                    setGroupEvents([]);
-                }
-            });
+            // getting all the members of the group
+            db.collection('event')
+                .where('group', '==', db.collection('group').doc(groupId))
+                .get()
+                .then((snap) => {
+                    if (snap.docs.length > 0) {
+                        const eventIds = snap.docs.map(el => el.id);
+                        db.collection('event')
+                            .where(firebase.firestore.FieldPath.documentId(), 'in', eventIds)
+                            .get()
+                            .then((eventData) => {
+                                let events = [];
+                                for (var i in eventData.docs) {
+                                    const el = eventData.docs[i];
+                                    events.push(
+                                        <Pressable
+                                            style={styles.flatListItem}
+                                            onPress={() => navigation.navigate('Events', { screen: 'Event Description', initial: false, params: { eventId: el.id } })}
+                                            key={el.id}>
+                                            <Text style={[styles.flatListText, { color: '#3107cb' }]}>{el.data().name}</Text>
+                                        </Pressable>
+                                    );
+                                }
+                                setGroupEvents(events);
+                            });
+                    } else {
+                        setGroupEvents([]);
+                    }
+                });
+        }
+
+        getAsyncData();
         return () => { isFocused = false; }
     }, [member, isFocused, reset]);
 
