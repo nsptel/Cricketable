@@ -3,6 +3,7 @@ import { Text, ScrollView, Image, TouchableOpacity, Pressable, View } from 'reac
 import { Avatar, ListItem } from 'react-native-elements';
 import AuthContext from '../../context';
 import firebase from 'firebase';
+import { useIsFocused } from '@react-navigation/native';
 
 const { styles, profileStyles } = require('../style');
 const db = require('../../db_conn');
@@ -10,9 +11,13 @@ const db = require('../../db_conn');
 export default GroupDescriptionScreen = ({ route, navigation }) => {
     const { state, dispatch } = React.useContext(AuthContext);
     const groupId = route.params.groupId;
+    const [reset, setReset] = React.useState(false);
     const [member, setMember] = React.useState('');
+    const [disableJoin, setDisableJoin] = React.useState(false);
+    const [joinText, setJoinText] = React.useState('Join');
     const [groupMembers, setGroupMembers] = React.useState([]);
     const [groupEvents, setGroupEvents] = React.useState([]);
+    let isFocused = useIsFocused();
     const [groupInfo, setGroupInfo] = React.useState({
         description: '',
         image: null,
@@ -24,6 +29,7 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
     React.useEffect(() => {
         setGroupMembers([]);
         setGroupEvents([]);
+
         // getting group and user information
         db.collection('group')
             .doc(route.params.groupId)
@@ -49,9 +55,21 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
             .where('userId', '==', state.userToken)
             .where('groupId', '==', groupId)
             .get()
-            .then((snap) => {
+            .then(async (snap) => {
                 if (snap.docs.length > 0) {
                     setMember(snap.docs[0].id);
+                } else {
+                    db.collection('requests')
+                        .where('userId', '==', state.userToken)
+                        .where('groupId', '==', groupId)
+                        .get()
+                        .then(request => {
+                            if (request.docs.length > 0) {
+                                setMember('');
+                                setDisableJoin(true);
+                                setJoinText('Requested');
+                            }
+                        });
                 }
             });
 
@@ -89,17 +107,6 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
                 }
             });
 
-        // getting all the events associated with this group
-        db.collection('members')
-            .where('userId', '==', state.userToken)
-            .where('groupId', '==', groupId)
-            .get()
-            .then((snap) => {
-                if (snap.docs.length > 0) {
-                    setMember(snap.docs[0].id);
-                }
-            });
-
         // getting all the members of the group
         db.collection('event')
             .where('group', '==', db.collection('group').doc(groupId))
@@ -129,15 +136,17 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
                     setGroupEvents([]);
                 }
             });
-    }, [member]);
+        return () => { isFocused = false; }
+    }, [member, isFocused, reset]);
 
     const joinGroup = async () => {
-        db.collection('members')
+        db.collection('requests')
             .add({
                 userId: state.userToken,
                 groupId: groupId
             }).then((doc) => {
-                setMember(doc.id);
+                setMember('');
+                setReset(!reset);
             });
     }
 
@@ -147,6 +156,9 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
             .delete()
             .then(() => {
                 setMember('');
+                setJoinText('Join');
+                setDisableJoin(false);
+                setReset(!reset);
             })
     }
 
@@ -186,33 +198,35 @@ export default GroupDescriptionScreen = ({ route, navigation }) => {
                     <Text style={styles.flatListItem}>This group does not have any events.</Text>
                 )}
                 <Text></Text>
-                {(groupId === '2C9Em7AvtIYobOnnwKCc') ? (
-                    <TouchableOpacity onPress={() => navigation.navigate("Join Requests")}
-                        style={styles.invertButton}>
-                        <Text style={[styles.text, styles.normalText]}>
-                            View Join Requests
-                        </Text>
-                    </TouchableOpacity>
+                {(groupInfo.user && state.userToken === groupInfo.user.id) ? (
+                    <>
+                        <TouchableOpacity onPress={() => navigation.navigate("Join Requests", { groupId: groupId })}
+                            style={styles.invertButton}>
+                            <Text style={[styles.text, styles.normalText]}>
+                                View Join Requests
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate("Create Event", { groupId: route.params.groupId })}
+                            style={styles.guideButtons}>
+                            <Text style={[styles.invertText, styles.text]}>
+                                Create Event
+                            </Text>
+                        </TouchableOpacity>
+                    </>
                 ) : (
-                    null
-                )}
-                <TouchableOpacity onPress={() => navigation.navigate("Create Event", { groupId: route.params.groupId })}
-                    style={styles.guideButtons}>
-                    <Text style={[styles.invertText, styles.text]}>
-                        Create Event
-                    </Text>
-                </TouchableOpacity>
-                {(member !== '') ? (
-                    <Pressable
-                        style={styles.button}
-                        onPress={() => leaveGroup()}>
-                        <Text style={[styles.invertText, styles.text]}>Leave Group</Text>
-                    </Pressable>) : (
-                    <Pressable
-                        style={styles.button}
-                        onPress={() => joinGroup()}>
-                        <Text style={[styles.invertText, styles.text]}>Join</Text>
-                    </Pressable>
+                    (member !== '') ? (
+                        <Pressable
+                            style={styles.button}
+                            onPress={() => leaveGroup()}>
+                            <Text style={[styles.invertText, styles.text]}>Leave Group</Text>
+                        </Pressable>) : (
+                        <Pressable
+                            disabled={disableJoin}
+                            style={styles.button}
+                            onPress={() => joinGroup()}>
+                            <Text style={[styles.invertText, styles.text]}>{joinText}</Text>
+                        </Pressable>
+                    )
                 )}
             </View>
         </ScrollView>

@@ -8,7 +8,9 @@ import SplashScreen from './assets/pages/loading';
 import GuideScreen from './assets/pages/guide';
 import { authReducer } from './reducer';
 import AuthContext from './context';
+import { LogBox } from 'react-native';
 
+LogBox.ignoreLogs(["Warning: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function."]);
 
 const App = () => {
   const [state, dispatch] = React.useReducer(
